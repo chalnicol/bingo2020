@@ -54,20 +54,43 @@ class BingoCard extends Phaser.GameObjects.Container {
 
             let ix = Math.floor ( i/5 ), iy = i% 5;
 
-            let numCont = scene.add.container ( bsx + ix * ( bs + bsp ), bsyb + iy * ( bs + bsp ) );
+            let numCont = scene.add.container ( bsx + ix * ( bs + bsp ), bsyb + iy * ( bs + bsp ) ).setSize( bs, bs ).setData ( 'isDotted', false );
 
             let rctb = scene.add.rectangle ( 0, 0, bs, bs, 0xf5f5f5, 1 ).setStrokeStyle ( 1, 0x6c6c6c );
 
             let txtb;
 
             if ( i != 12 ) {
+
                  txtb = scene.add.text ( 0, 0, this.arr [ix][iy], {color:'#3a3a3a', fontFamily:'Oswald', fontSize: bs/2 } ).setOrigin(0.5);
+
+                 numCont.setInteractive ();
+
             }else {
                  txtb = scene.add.text ( 0, 0, 'FREE', {color:'#ff3a3a', fontFamily:'Oswald', fontSize: bs*0.35 } ).setOrigin(0.5);
             }
             
 
             numCont.add ( [ rctb, txtb ]);
+
+            numCont.on ('pointerdown', function () {
+                
+                if ( !this.getData ('isDotted') ) {
+                    
+                    let crc = scene.add.circle ( 0, 0, bs/2, 0x00ffff, 0.5 );
+
+                    this.add ( crc );
+
+                    this.setData ('isDotted', true );
+
+                }else {
+
+                    this.last.destroy ();
+
+                    this.setData ('isDotted', false );
+                }
+
+            });
 
             this.add ( numCont );
 
