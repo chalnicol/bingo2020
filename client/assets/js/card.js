@@ -22,7 +22,6 @@ class BingoCard extends Phaser.GameObjects.Container {
             this.arr.push ( tmp );
         }
         
-
         const rct = scene.add.rectangle ( 0, 0, w, h, 0xffffff, 1 ).setStrokeStyle ( 2, 0x0a0a0a ).setOrigin (0);
 
         this.add (rct);
@@ -74,19 +73,11 @@ class BingoCard extends Phaser.GameObjects.Container {
 
         }
 
-
-        
-
-        
-
         scene.add.existing(this);
 
     }
+
     // ...
-
-    // preUpdate(time, delta) {}
-
-
     generateRandom () 
     {
 
