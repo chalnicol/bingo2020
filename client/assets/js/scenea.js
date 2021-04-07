@@ -17,24 +17,27 @@ class SceneA extends Phaser.Scene {
 
         this.ballsShownCounter = 0;
 
-
+        
         //profile..
 
         const txtConfig = {fontFamily : 'Oswald', fontSize : 25, color: '#3a3a3a' };
 
         let profileCont = this.add.container ( 0, 0 );
 
-        let rct = this.add.rectangle ( 40, 30, 80, 80, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a ).setOrigin ( 0 );
+        //let rct = this.add.rectangle ( 40, 30, 80, 80, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a ).setOrigin ( 0 );
 
-        let name = this.add.text ( 130, 30, 'chalnicol', txtConfig ).setFontSize ( 38 );
+        let pic = this.add.image ( 40 + 80/2, 30 + 80/2, 'profilepic').setScale ( 80/250 );
+
+        let name = this.add.text ( 130, 30, 'chalnicol', txtConfig ).setFontSize ( 36 );
 
         let money = this.add.text ( 130, 78, 'Coins: 1,000', txtConfig );
 
-        profileCont.add ( [ rct, name, money ]);
+        profileCont.add ( [ pic, name, money ]);
 
 
 
         //draw indicators
+
         this.indicatorsCont = this.add.container (0, 0);
 
         const bingoTxt = "BINGO";
@@ -76,6 +79,8 @@ class SceneA extends Phaser.Scene {
 
         //draw winning combination indicatior
 
+        this.winCont = this.add.container (0,0);
+
         const bbs = 50, bbsp = 6;
 
         const bbsx = 40 + (bbs/2), bbsy = 550 + (bbs/2);
@@ -86,8 +91,9 @@ class SceneA extends Phaser.Scene {
 
             let ix = Math.floor ( i/5 ), iy = i% 5;
 
-            this.add.rectangle ( bbsx + iy * ( bbs + bbsp), bbsy + ix * ( bbs+ bbsp), bbs, bbs, 0xffffff, 1 ).setStrokeStyle ( 1, 0x3a3a3a);
+            let winrct = this.add.rectangle ( bbsx + iy * ( bbs + bbsp), bbsy + ix * ( bbs+ bbsp), bbs, bbs, 0xffffff, 1 ).setStrokeStyle ( 1, 0x3a3a3a);
 
+            this.winCont.add ( winrct );
         }
 
 
@@ -95,7 +101,7 @@ class SceneA extends Phaser.Scene {
 
         this.add.text ( 40, 880, 'Jackpot Prize', { color : 'black', fontSize: 28, fontFamily: 'Oswald'} );
 
-        this.add.text ( 40, 920, '100,000.00', { color : '#ff5e5e', fontSize: 56, fontFamily: 'Oswald'} );
+        this.jackpotTxt = this.add.text ( 40, 920, '00.00', { color : '#ff5e5e', fontSize: 56, fontFamily: 'Oswald'} );
 
 
         //draw draw machine..
@@ -108,9 +114,9 @@ class SceneA extends Phaser.Scene {
 
         this.add.image ( 480 + dsw/2, 550 + dsh/2, 'drawmachine' );
 
-        //this.add.text ( 480 + dsw/2, 530 + dsh/2, 'Draw Starts in', { color : '#3a3a3a', fontSize: 28, fontFamily: 'Oswald'} ).setOrigin(0.5);
+        this.add.text ( 480 + dsw/2, 550 + dsh/2, 'Draw Starts in', { color : '#3a3a3a', fontSize: 28, fontFamily: 'Oswald'} ).setOrigin(0.5);
 
-        //this.add.text ( 480 + dsw/2, 580 + dsh/2, '00:00:00', { color : '#3a3a3a', fontSize: 40, fontFamily: 'Oswald'} ).setOrigin(0.5);
+        this.add.text ( 480 + dsw/2, 600 + dsh/2, '00:00:00', { color : '#3a3a3a', fontSize: 40, fontFamily: 'Oswald'} ).setOrigin(0.5);
 
       
 
@@ -209,6 +215,84 @@ class SceneA extends Phaser.Scene {
 
         this.cardCounter = this.add.text ( cardsx, 80, 'Card : 1/1', { color:'#3a3a3a', fontSize: 34, fontFamily: 'Oswald' });
 
+        this.loadGameData ();
+
+
+    }
+
+    loadGameData () 
+    {
+
+        let _this = this;
+
+        this.gameData = [];
+
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+
+            if (this.readyState == 4 && this.status == 200) {
+
+                _this.gameData = JSON.parse(this.responseText);
+
+                _this.showGame ();
+            }
+        };
+        xmlhttp.open("GET", "client/assets/json/data.json", true);
+        xmlhttp.send();
+
+
+    }
+
+    showGame () 
+    {
+
+        var _this = this;
+
+        const randGame = Math.floor (Math.random() * this.gameData.length );
+
+        //const randGame = 6;
+
+        const points = this.gameData [ randGame ].points;
+
+        let counter = 0;
+
+        if ( points.length > 1 ) {
+
+            let timer = this.time.addEvent({
+
+                delay: 1000, // ms
+                callback: function () {
+
+                    this.winCont.iterate ( function (child) {
+                        child.setFillStyle (0xffffff, 1);
+                    });
+
+                    for ( var i = 0; i < points[counter].length; i++) {
+                        this.winCont.getAt ( points[counter] [i] ).setFillStyle( 0xffff00, 1 );
+                    }
+
+                    counter += 1;
+
+                    if ( counter >= points.length ) counter = 0;
+
+                },
+                //args: [],
+                callbackScope: this,
+                loop: true
+            });
+
+        
+        }else {
+
+            console.log ('hey')
+            
+            for ( var i = 0; i < points[0].length; i++) {
+                this.winCont.getAt ( points[0] [i] ).setFillStyle( 0xffff00, 1 );
+            }
+
+        }
+
+        this.jackpotTxt.text = this.gameData[randGame].jackpot.toLocaleString('en-IN');
 
     }
 
@@ -228,7 +312,7 @@ class SceneA extends Phaser.Scene {
 
             let rndX = Phaser.Math.Between ( ra, rb );
 
-            let circCont = new BingoBalls ( this, rndX, 570, [], i, cz, cz, 8 );
+            let circCont = new BingoBalls ( this, rndX, 570, [], i, cz, cz, 9 );
 
             this.circDraw.add ( circCont );
 
@@ -287,7 +371,7 @@ class SceneA extends Phaser.Scene {
 
             ball.isCaptured = true;
             
-            ball.setPosition ( cx + cw/2, cy + ch/2 ).setAlpha (0.9);
+            ball.setPosition ( cx + cw/2, cy + ch/2 ).setAlpha (0.7);
 
             ball.first.setFillStyle (0xffff00, 1 );
 
@@ -320,7 +404,7 @@ class SceneA extends Phaser.Scene {
 
         const cs = 460/5;
 
-        const csx = 900 , csy = 556 + (cs/2);
+        const csx = 900 , csy = 550 + (cs/2);
 
         //..
         const bingoTxt = 'BINGO';
@@ -440,5 +524,6 @@ class SceneA extends Phaser.Scene {
         }
         
     }
+
 
 }

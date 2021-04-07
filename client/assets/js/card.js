@@ -7,6 +7,8 @@ class BingoCard extends Phaser.GameObjects.Container {
 
         this.arr = [];
 
+        this.isActive = false;
+
         for ( var i = 0; i < 5; i++ ) {
 
             let tmp = [];
@@ -33,6 +35,7 @@ class BingoCard extends Phaser.GameObjects.Container {
 
         const bsx = (w - ( w*0.92))/2 + (bs/2), bsy = 20 + (bs/2);
 
+        let _this = this;
 
         for ( var i = 0; i < 5; i++ ) {
 
@@ -47,6 +50,7 @@ class BingoCard extends Phaser.GameObjects.Container {
             this.add ( letCont );
 
         }
+
 
         const bsyb = 30 + ( bs*1.55 ) ;
 
@@ -75,19 +79,23 @@ class BingoCard extends Phaser.GameObjects.Container {
 
             numCont.on ('pointerdown', function () {
                 
-                if ( !this.getData ('isDotted') ) {
+                if ( _this.isActive ) {
+
+                    if ( !this.getData ('isDotted') ) {
+                        
+                        let crc = scene.add.circle ( 0, 0, bs/2, 0x00ffff, 0.5 );
+
+                        this.add ( crc );
+
+                        this.setData ('isDotted', true );
+
+                    }else {
+
+                        this.last.destroy ();
+
+                        this.setData ('isDotted', false );
+                    }
                     
-                    let crc = scene.add.circle ( 0, 0, bs/2, 0x00ffff, 0.5 );
-
-                    this.add ( crc );
-
-                    this.setData ('isDotted', true );
-
-                }else {
-
-                    this.last.destroy ();
-
-                    this.setData ('isDotted', false );
                 }
 
             });
