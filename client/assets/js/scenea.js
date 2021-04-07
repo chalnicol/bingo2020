@@ -96,12 +96,15 @@ class SceneA extends Phaser.Scene {
             this.winCont.add ( winrct );
         }
 
+        this.combTxt = this.add.text ( 40, 830, 'Name of Combination', { color:'#6a6a6a', fontSize: 26, fontFamily:'Oswald'});
+
+
 
         //draw jackpot prize section
 
-        this.add.text ( 40, 880, 'Jackpot Prize', { color : 'black', fontSize: 28, fontFamily: 'Oswald'} );
+        this.add.text ( 40, 900, 'Jackpot Prize', { color : 'black', fontSize: 28, fontFamily: 'Oswald'} );
 
-        this.jackpotTxt = this.add.text ( 40, 920, '00.00', { color : '#ff5e5e', fontSize: 56, fontFamily: 'Oswald'} );
+        this.jackpotTxt = this.add.text ( 40, 940, '00.00', { color : '#ff5e5e', fontSize: 56, fontFamily: 'Oswald'} );
 
 
         //draw draw machine..
@@ -119,18 +122,11 @@ class SceneA extends Phaser.Scene {
         this.add.text ( 480 + dsw/2, 600 + dsh/2, '00:00:00', { color : '#3a3a3a', fontSize: 40, fontFamily: 'Oswald'} ).setOrigin(0.5);
 
       
-
         const csp = 5, cs = (460 - (csp * 4))/5 ;
 
         const csx = 900 , csy = 550 + (cs/2);
 
         this.add.image ( csx, 550 + dsh/2, 'ballscont' );
-
-        // for ( var i = 0; i < 5; i++ ) {
-
-        //     this.add.circle ( csx, csy + (i*( cs + csp )), cs/2, 0xcecece, 1 ).setStrokeStyle ( 2, 0x3a3a3a );
-
-        // }
 
         let rctd = this.add.rectangle ( 480 + dsw/2, 550 + dsh/2, dsw, dsh ).setInteractive ();
 
@@ -163,34 +159,21 @@ class SceneA extends Phaser.Scene {
 
         //create card space..
 
-        const bfx = 1025, bfw = 1920 - bfx;
+        const cardspW = 895, cardspX = 1920 - cardspW;
 
-        //add card..
-
-        const cardW = 600, cardH = 720;
-
-        const cardsx = (bfw - cardW)/2 + bfx, cardsy = 150;
-
-        const cardnew = new BingoCard ( this, 1920, cardsy, [], cardW, cardH );
-
-        this.add.tween ({
-            targets : cardnew,
-            x : cardsx,
-            duration : 200,
-            delay : 500,
-            ease : 'Linear'
-        });
+        this.add.rectangle ( cardspX, 0, cardspW, 1080, 0xcecece, 1 ).setOrigin(0);
 
 
         //add controls button..
+        var _this = this;
 
-        const bts = 10, btw = (cardW - (2* bts))/3, bth = 60;
+        const bts = 10, btw = ( (cardspW*0.7) - (2* bts))/3, bth = 60;
 
-        const btx = (bfw - ( 3*( btw + bts ) - bts ))/2 + bfx + btw/2, 
+        const btx = ( cardspW - ( 3*( btw + bts ) - bts ))/2 + cardspX + btw/2, 
                 
               bty = 960;
 
-        const btns = [ '+ Add Card', 'Prev', 'Next' ];
+        const btns = [ '+', '<', '>' ];
 
         for ( var i = 0; i < btns.length; i++ ) {
 
@@ -198,27 +181,212 @@ class SceneA extends Phaser.Scene {
             
             let rt = this.add.rectangle ( 0, 0, btw, bth, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a );
 
-            let txtadd = this.add.text ( 0, 0, btns[i], { color : '#3a3a3a', fontSize : 30, fontFamily: 'Oswald' } ).setOrigin (0.5);
+            let txtadd = this.add.text ( 0, 0, btns[i], { color : '#3a3a3a', fontSize : 40, fontFamily: 'Oswald' } ).setOrigin (0.5);
         
             mycont.add ( [ rt, txtadd ]);
 
             mycont.on ('pointerover', function () {
-                this.first.setFillStyle (0xf3f3f3, 1);
+                this.first.setFillStyle (0xc3c3c3, 1);
             }); 
             mycont.on ('pointerout', function () {
                 this.first.setFillStyle (0xffffff, 1);
+            });
+            mycont.on ('pointerdown', function () {
+
+                switch ( this.getData ('id') ) {
+                    case 0 :
+                        _this.buyCard ();
+                        break;
+                    case 1 : 
+                        _this.prevCard ();
+                        break;
+                    case 2 : 
+                        _this.nextCard ();
+                        break;
+                    default:
+                }
             });
             
         }
 
         //card number 
+        this.cardsArr = [];
 
-        this.cardCounter = this.add.text ( cardsx, 80, 'Card : 1/1', { color:'#3a3a3a', fontSize: 34, fontFamily: 'Oswald' });
+        this.maxNumberOfCards = 5;
+
+        this.cardCounter = 0;
+
+        this.shownCard = 0;
+
+        this.cardTxt = this.add.text ( cardspX + cardspW/2, 80, 'Card : 0/0', { color:'#3a3a3a', fontSize: 40, fontFamily: 'Oswald' }).setOrigin (0.5);
+
+        this.cardContainer = this.add.container ( 0, 0 );
 
         this.loadGameData ();
 
+        this.buyCard ();
 
     }
+
+    shrinkShownCard ( xpos = null ) 
+    {
+
+        //let card = this.cardsArr [ this.shownCard ];
+
+        let card = this.cardContainer.getByName ('crd' + this.shownCard );
+
+        let myX = ( xpos == null ) ? card.x : xpos;
+
+        this.add.tween ({
+
+            targets : card,
+            x: myX,
+            scaleX : 0.5,
+            scaleY : 0.5,
+            duration : 200,
+            ease : 'Linear',
+            onComplete : function () {
+                card.visible = false;
+            }
+            
+        });
+        
+    }
+
+    buyCard () {
+
+        var _this = this;
+
+        if ( this.cardCounter < this.maxNumberOfCards) {
+
+            if ( this.cardCounter > 0 ) {
+
+                this.shrinkShownCard ( 1225);
+            
+            }
+            
+            this.addCard ();
+                        
+        }
+    }
+
+    addCard () {
+
+        const cardspX = 1025, cardspW = 1920 - cardspX;
+
+        //add card..
+        const cardW = 600, cardH = 720;
+
+        const cardsx = (cardspW - cardW)/2 + cardspX + cardW/2, 
+              cardsy = 150 + cardH/2;
+
+        const cardnew = new BingoCard ( this, 1920 + (cardW/2), cardsy, [], cardW, cardH, this.cardCounter );
+
+        this.add.tween ({
+            targets : cardnew,
+            x : cardsx,
+            duration : 200,
+            delay : 200,
+            ease : 'Linear'
+        });
+
+        this.cardContainer.add ( cardnew );
+
+        //this.cardsArr.push ( cardnew );
+
+        this.shownCard = this.cardCounter;
+
+        this.cardCounter += 1;
+
+        this.cardTxt.text = 'Card : ' + this.cardCounter + '/' + this.cardCounter;
+
+    
+    }
+
+    prevCard ( ) {
+
+        var _this = this;
+
+        const cardspX = 1025, cardspW = 1920 - cardspX;
+
+
+        if ( this.shownCard > 0 ) {
+
+            this.shrinkShownCard ( 1720 );
+
+            //let card = this.cardsArr [ this.shownCard - 1 ];
+
+            let card = this.cardContainer.getByName ('crd' + (this.shownCard - 1) );
+
+            card.setVisible (true);
+
+            card.x = cardspX + card.w/2;
+
+            this.add.tween ({
+                targets : card,
+                scaleX : 1, 
+                scaleY : 1,
+                x :  cardspX + cardspW/2,
+                ease : 'Linear',
+                duration : 200,
+                delay : 200,
+                onComplete : function () {
+                    _this.cardContainer.bringToTop ( card );
+                }
+                
+            });
+
+            this.shownCard += -1;
+
+            this.cardTxt.text = 'Card : ' + (this.shownCard + 1) + '/' + this.cardCounter;
+
+        }
+
+
+    }
+
+    nextCard () {
+
+        var _this = this;
+
+        const cardspX = 1025, cardspW = 1920 - cardspX;
+
+        if ( this.shownCard < (this.cardCounter-1) ) {
+
+            this.shrinkShownCard ( 1225 );
+
+            //let card = this.cardsArr [ this.shownCard + 1 ];
+
+            let card = this.cardContainer.getByName ('crd' + (this.shownCard + 1) );
+
+
+            card.setVisible (true);  //setAlpha (0);
+
+            card.x = 1920 - card.w/2;
+
+            this.add.tween ({
+                targets : card,
+                //alpha : 1,
+                scaleX : 1, scaleY : 1,
+                x :  cardspX + cardspW/2,
+                ease : 'Linear',
+                duration : 200,
+                delay : 200,
+                onComplete : function () {
+                    _this.cardContainer.bringToTop ( card );
+                }
+
+            });
+
+            this.shownCard += 1;
+
+            this.cardTxt.text = 'Card : ' + (this.shownCard + 1) + '/' + this.cardCounter;
+
+        }
+
+
+    }
+
 
     loadGameData () 
     {
@@ -292,7 +460,9 @@ class SceneA extends Phaser.Scene {
 
         }
 
-        this.jackpotTxt.text = this.gameData[randGame].jackpot.toLocaleString('en-IN');
+        this.jackpotTxt.text = this.gameData[randGame].jackpot.toLocaleString('en-IN')  + '.00';
+
+        this.combTxt.text = ': ' + this.gameData [ randGame ].name;
 
     }
 
@@ -312,7 +482,7 @@ class SceneA extends Phaser.Scene {
 
             let rndX = Phaser.Math.Between ( ra, rb );
 
-            let circCont = new BingoBalls ( this, rndX, 570, [], i, cz, cz, 9 );
+            let circCont = new BingoBalls ( this, rndX, 570, [], i, cz, cz, 12 );
 
             this.circDraw.add ( circCont );
 
@@ -337,7 +507,7 @@ class SceneA extends Phaser.Scene {
         this.startDrawAnim = true;
 
         this.drawTimer = this.time.addEvent({
-            delay: 3000,                // ms
+            delay: 5000,                // ms
             callback: function () {
                 this.getNumber ()
             },

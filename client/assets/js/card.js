@@ -1,13 +1,21 @@
 class BingoCard extends Phaser.GameObjects.Container {
 
-    constructor(scene, x, y, children, w, h ) {
+    constructor(scene, x, y, children, w, h, i ) {
 
         super(scene, x, y, children);
         // ...
 
         this.arr = [];
 
-        this.isActive = false;
+        this.w = w;
+
+        this.h = h;
+
+        this.isActive = true;
+
+        this.setName ('crd' + i );
+
+        //generate numbers
 
         for ( var i = 0; i < 5; i++ ) {
 
@@ -24,16 +32,22 @@ class BingoCard extends Phaser.GameObjects.Container {
             this.arr.push ( tmp );
         }
         
-        const rct = scene.add.rectangle ( 0, 0, w, h, 0xffffff, 1 ).setStrokeStyle ( 2, 0x0a0a0a ).setOrigin (0);
+        //create card body 
+        
+        const rct = scene.add.rectangle ( 0, 0, w, h, 0xffffff, 1 ).setStrokeStyle ( 2, 0x0a0a0a );
 
         this.add (rct);
+
+        const top = -h/2, lft = -w/2;
 
         //..
         const bingoTxt = "BINGO";
 
         const bsp = 5, bs = ((w * 0.92) - (4*bsp))/5;
 
-        const bsx = (w - ( w*0.92))/2 + (bs/2), bsy = 20 + (bs/2);
+        const bsx = (w - ( w*0.92))/2 + (bs/2) + lft, 
+        
+              bsy = 20 + (bs/2) + top;
 
         let _this = this;
 
@@ -52,7 +66,7 @@ class BingoCard extends Phaser.GameObjects.Container {
         }
 
 
-        const bsyb = 30 + ( bs*1.55 ) ;
+        const bsyb = 30 + ( bs*1.55 ) + top ;
 
         for ( var i = 0; i < 25; i++ ) {
 
