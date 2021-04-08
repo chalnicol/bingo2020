@@ -23,22 +23,43 @@ class SceneA extends Phaser.Scene {
 
         let pic = this.add.image ( 80, 70, 'profilepic');
 
-        let name = this.add.text ( 130, 30, 'chalnicol', txtConfig ).setFontSize ( 36 );
+      
 
-        let money = this.add.text ( 130, 75, 'Cash: 10,000',  { color:'#5e5e5e', fontFamily: 'Oswald', fontSize: 25 } );
+        let cashCont = this.add.container ( 230, 70 ); //200x80
 
-        profileCont.add ( [ pic, name, money ]);
+        let img = this.add.image ( 0, 0, 'gamecon' );
+
+        let cashtxt = this.add.text ( -85, -33, 'Cash',  { color:'#990000', fontFamily: 'Oswald', fontSize: 20 } );
+
+        let moneytxt = this.add.text (-85, -7, '10,000',  { color:'#3a3a3a', fontFamily: 'Oswald', fontSize: 32 } );
+
+        cashCont.add ( [ img, cashtxt, moneytxt ]);
 
 
+        let prizeCont = this.add.container ( 440, 70 ); //200x80
 
-        //game 980
+        let imgb = this.add.image ( 0, 0, 'gamecon' );
 
-        this.add.rectangle ( 980 - 260/2, 70, 260, 80, 0xffffff, 1 );
+        let txtba = this.add.text ( -85, -33, 'Prize/Bingo Card',  { color:'#990000', fontFamily: 'Oswald', fontSize: 20 } );
 
-        this.add.text ( 960, 38, '1K / Bingo Card', {color:'black', fontFamily: 'Oswald', fontSize: 30 } ).setOrigin ( 1, 0);
+        let txtbb = this.add.text (-85, -7, '50',  { color:'#3a3a3a', fontFamily: 'Oswald', fontSize: 32 } );
 
-        this.add.text ( 960, 75, 'Max Number of Cards : 5', { color:'#5e5e5e', fontFamily: 'Oswald', fontSize: 22 } ).setOrigin ( 1, 0);
+        prizeCont.add ( [ imgb, txtba, txtbb ]);
 
+
+        
+        let maxCardsCont = this.add.container ( 650, 70 ); //200x80
+
+        let imgc = this.add.image ( 0, 0, 'gamecon' );
+
+        let txtca = this.add.text ( -85, -33, 'Max Cards',  { color:'#990000', fontFamily: 'Oswald', fontSize: 20 } );
+
+        let txtcb = this.add.text (-85, -7, '5',  { color:'#3a3a3a', fontFamily: 'Oswald', fontSize: 32 } );
+
+        maxCardsCont.add ( [ imgc, txtca, txtcb ]);
+
+
+        this.add.image ( 940, 70, 'settingbtn' );
 
 
         //draw indicators
@@ -106,7 +127,7 @@ class SceneA extends Phaser.Scene {
         
         //draw jackpot prize section
 
-        this.add.text ( 40, 820, 'Jackpot Prize', { color : 'black', fontSize: 28, fontFamily: 'Oswald'} );
+        this.add.text ( 40, 810, 'Jackpot Prize', { color : 'black', fontSize: 28, fontFamily: 'Oswald'} );
 
         this.jackpotTxt = this.add.text ( 40, 850, '00.00', { color : '#ff0a0a', fontSize: 56, fontFamily: 'Oswald'} );
 
@@ -115,7 +136,7 @@ class SceneA extends Phaser.Scene {
 
         this.add.text ( 40, 940, 'Consolation Prize', { color : '#3a3a3a', fontSize: 22, fontFamily: 'Oswald'} );
 
-        this.consolationTxt = this.add.text ( 40, 970, '1,000.00', { color : '#ff3a3a', fontSize: 36, fontFamily: 'Oswald'} );
+        this.consolationTxt = this.add.text ( 40, 980, '1,000.00', { color : '#ff3a3a', fontSize: 36, fontFamily: 'Oswald'} );
 
 
         //draw draw machine..
@@ -175,7 +196,7 @@ class SceneA extends Phaser.Scene {
         
         let rctc = this.add.rectangle ( 0,0, 600, 100, 0x0a0a0a, 0.8 );
 
-        let rcte = this.add.rectangle ( 0,0, 620, 120).setStrokeStyle (2, 0x0a0a0a);
+        let rcte = this.add.rectangle ( 0,0, 610, 110).setStrokeStyle (2, 0x0a0a0a);
 
 
         let txtc = this.add.text ( 0, 0, 'Click Here To Buy A Card', { color:'white', fontSize: 38, fontFamily:'Oswald' }).setOrigin(0.5);
@@ -235,9 +256,9 @@ class SceneA extends Phaser.Scene {
 
         let cont = this.add.container ( 1025 + (895/2), 540 );
 
-        let rect = this.add.rectangle ( 0, 0, 450, 80, 0x0a0a0a, 0.7 );
+        let rect = this.add.rectangle ( 0, 0, 300, 50, 0x0a0a0a, 0.5 );
 
-        let txt = this.add.text ( 0,0, 'Loading..', { color:'white', fontFamily : 'Oswald', fontSize : 26 }).setOrigin(0.5);
+        let txt = this.add.text ( 0,0, 'Loading..', { color:'white', fontFamily : 'Oswald', fontSize : 22 }).setOrigin(0.5);
 
         cont.add ([rect, txt ]);
 
@@ -433,7 +454,7 @@ class SceneA extends Phaser.Scene {
 
             card.setVisible (true);
 
-            card.x = cardspX + card.w/2;
+            card.x = 1275;
 
             this.add.tween ({
                 targets : card,
@@ -475,7 +496,7 @@ class SceneA extends Phaser.Scene {
 
             card.setVisible (true);  //setAlpha (0);
 
-            card.x = 1920 - card.w/2;
+            card.x = 1670;
 
             this.add.tween ({
                 targets : card,
@@ -572,9 +593,9 @@ class SceneA extends Phaser.Scene {
 
         }
 
-        this.jackpotTxt.text = this.gameData[randGame].jackpot.toLocaleString('en-IN')  + '.00';
+        this.jackpotTxt.text = this.gameData[randGame].jackpot.toLocaleString()  + '.00';
 
-        //this.combTxt.text = ': ' + this.gameData [ randGame ].name;
+        this.consolationTxt.text = this.gameData[randGame].consolation.toLocaleString()  + '.00'
 
     }
 
@@ -646,12 +667,14 @@ class SceneA extends Phaser.Scene {
     startDrawAnimation () 
     {
 
+        const drawGap = 10000;
+
         var _this = this;
 
         this.startDrawAnim = true;
 
         this.drawTimer = this.time.addEvent({
-            delay: 5000,                // ms
+            delay: drawGap,                // ms
             callback: function () {
                 this.getNumber ()
             },

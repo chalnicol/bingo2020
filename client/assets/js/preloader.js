@@ -44,6 +44,12 @@ class Preloader extends Phaser.Scene {
 
         this.load.image('ballscont', 'client/assets/images/ballscontainer.png');
 
+
+        this.load.image('gamecon', 'client/assets/images/gamecon.png');
+
+        this.load.image('settingbtn', 'client/assets/images/setting.png');
+        
+
         this.load.image('profilepic', 'client/assets/images/profilepic_sm.png');
 
         this.load.audioSprite('sfx', 'client/assets/sfx/fx_mixdown.json', [
