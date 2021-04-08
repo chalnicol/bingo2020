@@ -256,11 +256,22 @@ class SceneA extends Phaser.Scene {
 
         let cont = this.add.container ( 1025 + (895/2), 540 );
 
-        let rect = this.add.rectangle ( 0, 0, 300, 50, 0x0a0a0a, 0.5 );
+        let rect = this.add.rectangle ( 0, 0, 380, 100, 0x0a0a0a, 0.5 );
 
-        let txt = this.add.text ( 0,0, 'Loading..', { color:'white', fontFamily : 'Oswald', fontSize : 22 }).setOrigin(0.5);
+        let txt = this.add.text ( 0, -10, 'Loading', { color:'white', fontFamily : 'Oswald', fontSize : 22 }).setOrigin(0.5);
 
         cont.add ([rect, txt ]);
+
+        const cs = 10, csp = 10;
+
+        for ( var i = 0; i < 4; i++ ) {
+
+            let crcr = this.add.circle ( -35 + i * (cs + csp), 20, cs/2, 0xfefefe, 1 );
+
+            cont.add ( crcr );
+        }
+
+       
 
         this.time.delayedCall ( 300, function () {
 
@@ -303,13 +314,13 @@ class SceneA extends Phaser.Scene {
 
         var _this = this;
 
-        const bts = 400, btw = 100, bth = 50;
+        const bts = 400, btw = 100, bth = 68;
 
         //const tw = (btw*2) + bts;
 
         const btx = ( (895 - ((btw*2)+bts))/2 ) + (btw/2) + 1025, 
              
-              bty = 100;
+              bty = 80;
 
         const btns = [ '<', '>' ];
 
@@ -319,7 +330,7 @@ class SceneA extends Phaser.Scene {
             
             let rt = this.add.rectangle ( 0, 0, btw, bth, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a );
 
-            let txtadd = this.add.text ( 0, 0, btns[i], { color : '#3a3a3a', fontSize : 26, fontFamily: 'Oswald' } ).setOrigin (0.5);
+            let txtadd = this.add.text ( 0, 0, btns[i], { color : '#3a3a3a', fontSize : 40, fontFamily: 'Oswald' } ).setOrigin (0.5);
         
             mycont.add ( [ rt, txtadd ] );
 
@@ -344,9 +355,9 @@ class SceneA extends Phaser.Scene {
             
         }
 
-        this.add.rectangle ( 1472.5, 100, 380, 50, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a );
+        this.add.rectangle ( 1472.5, bty, 370, bth, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a );
 
-        this.cardTxt = this.add.text ( 1472.5, 100, 'Card : 0/0', { color:'#3a3a3a', fontSize: 34, fontFamily: 'Oswald' }).setOrigin (0.5);
+        this.cardTxt = this.add.text ( 1472.5, bty, 'Card : 0/0', { color:'#3a3a3a', fontSize: 40, fontFamily: 'Oswald' }).setOrigin (0.5);
 
     }
 
@@ -829,6 +840,11 @@ class SceneA extends Phaser.Scene {
         console.log ( 'BINGO', this.shownCard );
 
     }
+
+    showPrompt () {
+
+    }
+
 
     update ( time, delta ) {
 
