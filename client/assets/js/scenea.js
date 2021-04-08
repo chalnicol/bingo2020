@@ -107,9 +107,6 @@ class SceneA extends Phaser.Scene {
         }
 
         
-
-
-
         //draw jackpot prize section
 
         this.add.text ( 40, 820, 'Jackpot Prize', { color : 'black', fontSize: 28, fontFamily: 'Oswald'} );
@@ -123,8 +120,6 @@ class SceneA extends Phaser.Scene {
 
         this.consolationTxt = this.add.text ( 40, 970, '1,000.00', { color : '#ff3a3a', fontSize: 36, fontFamily: 'Oswald'} );
 
-        
-
 
         //draw draw machine..
 
@@ -135,10 +130,12 @@ class SceneA extends Phaser.Scene {
         this.add.image ( 480 + dsw/2, 550 + dsh/2, 'drawmachine' );
 
         //timer progress..
-        this.timerprogress = this.add.rectangle ( 483, 870, 354, 100, 0x99ff99, 1 ).setOrigin(0);
+        
+        this.timerprogress = this.add.rectangle ( 483, 870, 354, 100, 0x99ff99, 1 ).setOrigin(0).setVisible(false);
 
-        //draw countdonw...
 
+        //draw countdown...
+        
         this.drawCountDown = this.add.container ( 480 + dsw/2, 550 + dsh/2 );
 
         let rctj = this.add.rectangle ( 0, 0, 356, 180, 0x6e6e6e, 0.8 );
@@ -174,14 +171,14 @@ class SceneA extends Phaser.Scene {
 
         const btx = 1025 + (895/2), bty = 1080/2;
 
-        this.add.rectangle ( cardspX, 0, cardspW, 1080, 0xcecece, 1 ).setOrigin(0); //background
+        this.add.rectangle ( cardspX, 0, cardspW, 1080, 0xf3f3f3, 1 ).setOrigin(0); //background
 
 
         this.clickBuyCont = this.add.container ( btx, bty ).setSize ( 500, 300 ).setInteractive ();
         
-        let rctc = this.add.rectangle ( 0,0, 500, 300, 0xffffff, 1 ).setStrokeStyle (2, 0x0a0a0a );
+        let rctc = this.add.rectangle ( 0,0, 600, 300, 0x0a0a0a, 0.5 );
 
-        let txtc = this.add.text ( 0, 0, 'Click Here To Buy A Card', { color:'black', fontSize: 38, fontFamily:'Oswald' }).setOrigin(0.5);
+        let txtc = this.add.text ( 0, 0, 'Click Here To Buy A Card', { color:'white', fontSize: 38, fontFamily:'Oswald' }).setOrigin(0.5);
 
         this.clickBuyCont.add ([ rctc, txtc ]);
 
@@ -208,11 +205,8 @@ class SceneA extends Phaser.Scene {
 
         this.loadGameData ();
 
-        
 
     }
-
-   
 
     shrinkShownCard ( xpos = null ) 
     {
@@ -236,26 +230,38 @@ class SceneA extends Phaser.Scene {
 
     buyCard () {
 
-        var _this = this;
+        //var _this = this;
 
-        if ( this.cardCounter < this.maxNumberOfCards ) {
+        this.time.delayedCall ( 300, function () {
 
-            if ( this.cardCounter > 0 ) {
+            if ( this.cardCounter < this.maxNumberOfCards ) {
 
-                this.shrinkShownCard (1175);
+                if ( this.cardCounter > 0 ) {
+    
+                    this.shrinkShownCard (1175);
+    
+                }else {
+    
+                    this.addCardNav ();
+    
+                    this.addControlBtn ();
+    
+                }
+    
+                this.addCard();
+    
+                if ( this.cardCounter >= this.maxNumberOfCards ){
+                    
+                    this.controlCont.first.setFillStyle( 0xdedede, 1);
 
-            }else {
+                    this.controlCont.removeInteractive ().setAlpha (0.9);
 
-                this.addCardNav ();
-
-                this.addControlBtn ();
-
+                }
             }
-
             
-            this.addCard ();
-                        
-        }
+        }, [], this );
+
+        
     }
 
     addCardNav () 
@@ -314,8 +320,11 @@ class SceneA extends Phaser.Scene {
 
     addControlBtn ( gameStarted = false ) {
 
+        console.log ('this is mand');
 
-        let txt = !gameStarted ? '+ Add Card' : 'Declare Bingo!!!';
+        var _this = this;
+
+        let txt = !gameStarted ? '+ Add Card' : 'Declare Bingo';
 
         const bw = 600, bh = 70;
 
@@ -342,17 +351,15 @@ class SceneA extends Phaser.Scene {
 
         this.controlCont.on ('pointerdown', function () {
 
-            this.controlCont.first.setFillStyle ( 0xff33ff, 1 );
+            this.first.setFillStyle ( 0xff9999, 1 );
 
             if ( !gameStarted ) {
-                this.buyCard ();
+                _this.buyCard ();
             }else {
-                this.stateBingo();
+                _this.stateBingo();
             }
-
-        }, this);
-
-
+            
+        });
 
         this.add.tween ({
             targets : this.controlCont,
@@ -565,6 +572,8 @@ class SceneA extends Phaser.Scene {
 
         this.ballsCreated = true;
 
+        this.timerprogress.visible = true;
+        
         //480,550 360x460
         this.circDraw = this.add.container (0, 0);
 
