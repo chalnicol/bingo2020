@@ -4,20 +4,15 @@ class SceneA extends Phaser.Scene {
     {
         super('SceneA');
     }
+
     preload ()
     {
 
     }
+
     create () 
     {
 
-        this.ballsCreated = false;
-
-        this.drawCount = 0;
-
-        this.ballsShownCounter = 0;
-
-        
         //profile..
 
         const txtConfig = {fontFamily : 'Oswald', fontSize : 25, color: '#3a3a3a' };
@@ -36,11 +31,13 @@ class SceneA extends Phaser.Scene {
 
 
 
-        //game
+        //game 980
 
-        this.add.text ( 980, 30, '1K / Bingo Card', {color:'black', fontFamily: 'Oswald', fontSize: 36 } ).setOrigin ( 1, 0);
+        this.add.rectangle ( 980 - 260/2, 70, 260, 80, 0xffffff, 1 );
 
-        this.add.text ( 980, 75, 'Max Number of Cards : 5', { color:'#5e5e5e', fontFamily: 'Oswald', fontSize: 25 } ).setOrigin ( 1, 0);
+        this.add.text ( 960, 38, '1K / Bingo Card', {color:'black', fontFamily: 'Oswald', fontSize: 30 } ).setOrigin ( 1, 0);
+
+        this.add.text ( 960, 75, 'Max Number of Cards : 5', { color:'#5e5e5e', fontFamily: 'Oswald', fontSize: 22 } ).setOrigin ( 1, 0);
 
 
 
@@ -176,11 +173,14 @@ class SceneA extends Phaser.Scene {
 
         this.clickBuyCont = this.add.container ( btx, bty ).setSize ( 500, 300 ).setInteractive ();
         
-        let rctc = this.add.rectangle ( 0,0, 600, 300, 0x0a0a0a, 0.5 );
+        let rctc = this.add.rectangle ( 0,0, 600, 100, 0x0a0a0a, 0.8 );
+
+        let rcte = this.add.rectangle ( 0,0, 620, 120).setStrokeStyle (2, 0x0a0a0a);
+
 
         let txtc = this.add.text ( 0, 0, 'Click Here To Buy A Card', { color:'white', fontSize: 38, fontFamily:'Oswald' }).setOrigin(0.5);
 
-        this.clickBuyCont.add ([ rctc, txtc ]);
+        this.clickBuyCont.add ([ rctc, rcte, txtc ]);
 
         this.clickBuyCont.once ('pointerdown', function () {
 
@@ -192,6 +192,9 @@ class SceneA extends Phaser.Scene {
 
 
         //card number 
+        this.drawCount = 0;
+
+        this.ballsShownCounter = 0;
 
         this.cardsArr = [];
 
@@ -230,9 +233,18 @@ class SceneA extends Phaser.Scene {
 
     buyCard () {
 
-        //var _this = this;
+        let cont = this.add.container ( 1025 + (895/2), 540 );
+
+        let rect = this.add.rectangle ( 0, 0, 450, 80, 0x0a0a0a, 0.7 );
+
+        let txt = this.add.text ( 0,0, 'Loading..', { color:'white', fontFamily : 'Oswald', fontSize : 26 }).setOrigin(0.5);
+
+        cont.add ([rect, txt ]);
 
         this.time.delayedCall ( 300, function () {
+
+
+            cont.destroy();
 
             if ( this.cardCounter < this.maxNumberOfCards ) {
 
@@ -260,8 +272,7 @@ class SceneA extends Phaser.Scene {
             }
             
         }, [], this );
-
-        
+   
     }
 
     addCardNav () 
@@ -570,8 +581,6 @@ class SceneA extends Phaser.Scene {
     createBalls () 
     {
 
-        this.ballsCreated = true;
-
         this.timerprogress.visible = true;
         
         //480,550 360x460
@@ -615,6 +624,10 @@ class SceneA extends Phaser.Scene {
         if ( this.cardCounter > 0 ) {
             
             this.controlCont.destroy();
+
+            this.cardContainer.iterate ( function (child) {
+                child.isActive = true;
+            });
 
             this.addControlBtn ( true );
 

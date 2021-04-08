@@ -11,7 +11,7 @@ class BingoCard extends Phaser.GameObjects.Container {
 
         this.h = h;
 
-        this.isActive = true;
+        this.isActive = false;
 
         this.setName ('crd' + i );
 
