@@ -72,7 +72,7 @@ class BingoCard extends Phaser.GameObjects.Container {
 
             let ix = Math.floor ( i/5 ), iy = i% 5;
 
-            let numCont = scene.add.container ( bsx + ix * ( bs + bsp ), bsyb + iy * ( bs + bsp ) ).setSize( bs, bs ).setData ( 'isDotted', false );
+            let numCont = scene.add.container ( bsx + ix * ( bs + bsp ), bsyb + iy * ( bs + bsp ) ).setSize( bs, bs ).setData ( 'isDotted', false ).setName ('cell' + i);
 
             let rctb = scene.add.rectangle ( 0, 0, bs, bs, 0xf5f5f5, 1 ).setStrokeStyle ( 1, 0x6c6c6c );
 
@@ -88,6 +88,8 @@ class BingoCard extends Phaser.GameObjects.Container {
                  txtb = scene.add.text ( 0, 0, 'FREE', {color:'#ff3a3a', fontFamily:'Oswald', fontSize: bs*0.35 } ).setOrigin(0.5);
             }
             
+            //let tmp = scene.add.text ( -bs/2, -bs/2, i,  {color:'#6e6e6e', fontFamily:'Oswald', fontSize: 18 } );
+
 
             numCont.add ( [ rctb, txtb ]);
 
