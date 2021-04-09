@@ -837,19 +837,20 @@ class SceneA extends Phaser.Scene {
 
     stateBingo () 
     {
-        console.log ( 'BINGO', this.shownCard );
-        
-        this.showPrompt ('Are you sure?' , this.checkGame, this );
-        
 
+        this.showPrompt ('Are you sure?', () => this.checkCard() );
+        
     }
 
-    checkGame () 
+    checkCard () 
     {
 
         this.removePrompt ();
         
+        this.stopDrawAnimation ();
+        
         console.log ( 'this is it' );
+
 
     }
 
@@ -865,9 +866,9 @@ class SceneA extends Phaser.Scene {
 
         let bg = this.add.rectangle ( cx, cy, 895, 1080, 0x0a0a0a, 0.8 ).setInteractive ();
 
-        let mrct = this.add.rectangle ( cx, cy, 600, 360, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a );
+        let mrct = this.add.rectangle ( cx, cy, 600, 300, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a );
 
-        let mtxt = this.add.text ( cx, cy - 60, txt, { color:'#0a0a0a', fontFamily:'Oswald', fontSize: 32 } ).setOrigin(0.5);
+        let mtxt = this.add.text ( cx, cy - 60, txt, { color:'#0a0a0a', fontFamily:'Oswald', fontSize: 34 } ).setOrigin(0.5);
 
         this.promptCont.add ([ bg, mrct, mtxt ]);
 
@@ -878,7 +879,7 @@ class SceneA extends Phaser.Scene {
 
         const btx = cx - (( bw * btnArr.length ) + bsp)/2 + ( bw/2 ), 
 
-              bty = cy + 80;
+              bty = cy + 60;
         
 
         for ( var i = 0; i < btnArr.length; i++ ) {
@@ -887,7 +888,7 @@ class SceneA extends Phaser.Scene {
 
             let rct = this.add.rectangle ( 0, 0, bw, bh, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a );
 
-            let txt = this.add.text ( 0, 0, btnArr[i],  { color:'#0a0a0a', fontFamily:'Oswald', fontSize: bh/2 }  ).setOrigin (0.5);
+            let txt = this.add.text ( 0, 0, btnArr[i],  { color:'#0a0a0a', fontFamily:'Oswald', fontSize: bh*0.4 }  ).setOrigin (0.5);
             
             btnCont.add ([ rct, txt ]);
 
