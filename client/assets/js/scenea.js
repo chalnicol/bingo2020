@@ -227,8 +227,7 @@ class SceneA extends Phaser.Scene {
 
         this.cardContainer = this.add.container ( 0, 0 );
 
-        this.loadGameData ();
-
+        this.showGame ();
 
     }
 
@@ -532,39 +531,17 @@ class SceneA extends Phaser.Scene {
 
     }
 
-    loadGameData () 
-    {
-
-        let _this = this;
-
-        this.gameData = [];
-
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-
-            if (this.readyState == 4 && this.status == 200) {
-
-                _this.gameData = JSON.parse(this.responseText);
-
-                _this.showGame ();
-            }
-        };
-        xmlhttp.open("GET", "client/assets/json/data.json", true);
-        xmlhttp.send();
-
-
-    }
 
     showGame () 
     {
 
-        var _this = this;
+        //var _this = this;
 
-        const randGame = Math.floor (Math.random() * this.gameData.length );
+        const randGame = Math.floor (Math.random() * gameData.length );
 
         //const randGame = 6;
 
-        const points = this.gameData [ randGame ].points;
+        const points = gameData [ randGame ].points;
 
         let counter = 0;
 
@@ -596,17 +573,17 @@ class SceneA extends Phaser.Scene {
         
         }else {
 
-            console.log ('hey')
-            
             for ( var i = 0; i < points[0].length; i++) {
                 this.winCont.getAt ( points[0] [i] ).setFillStyle( 0xffff00, 1 );
             }
 
         }
 
-        this.jackpotTxt.text = this.gameData[randGame].jackpot.toLocaleString()  + '.00';
+        this.jackpotTxt.text = gameData[randGame].jackpot.toLocaleString()  + '.00';
 
-        this.consolationTxt.text = this.gameData[randGame].consolation.toLocaleString()  + '.00'
+        this.consolationTxt.text = gameData[randGame].consolation.toLocaleString()  + '.00'
+
+        this.gameId = randGame;
 
     }
 
@@ -686,9 +663,7 @@ class SceneA extends Phaser.Scene {
 
         this.drawTimer = this.time.addEvent({
             delay: drawGap,                // ms
-            callback: function () {
-                this.getNumber ()
-            },
+            callback: () => this.getNumber(),
             //args: [],
             callbackScope: this,
             loop: true
@@ -847,9 +822,20 @@ class SceneA extends Phaser.Scene {
 
         this.removePrompt ();
         
-        this.stopDrawAnimation ();
+        this.drawTimer.paused = true;
+
+        let card = this.cardContainer.getByName ('crd' + this.shownCard );
         
-        console.log ( 'this is it' );
+
+        const arr = card.arr;
+        
+        const points = gameData [ this.gameId ].points;
+
+        for ( var i in points ) {
+
+
+            
+        }
 
 
     }
