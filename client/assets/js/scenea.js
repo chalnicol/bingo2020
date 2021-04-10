@@ -13,6 +13,18 @@ class SceneA extends Phaser.Scene {
     create () 
     {
 
+        // initialize player..
+        this.player = {
+            pic : 'profilepic',
+            username : 'chalnicol',
+            cash : 1000
+        }
+
+        this.drawGap = 3000;
+
+        this.maxNumberOfCards = 3;
+
+
         //profile..
 
         const txtConfig = {fontFamily : 'Oswald', fontSize : 25, color: '#3a3a3a' };
@@ -21,7 +33,7 @@ class SceneA extends Phaser.Scene {
 
         //let rct = this.add.rectangle ( 40, 30, 80, 80, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a ).setOrigin ( 0 );
 
-        let pic = this.add.image ( 80, 70, 'profilepic');
+        let pic = this.add.image ( 80, 70, this.player.pic ); // 
 
       
 
@@ -31,7 +43,7 @@ class SceneA extends Phaser.Scene {
 
         let cashtxt = this.add.text ( -85, -33, 'Cash',  { color:'#990000', fontFamily: 'Oswald', fontSize: 20 } );
 
-        let moneytxt = this.add.text (-85, -7, '10,000',  { color:'#3a3a3a', fontFamily: 'Oswald', fontSize: 32 } );
+        let moneytxt = this.add.text (-85, -7, this.player.cash.toLocaleString(),  { color:'#3a3a3a', fontFamily: 'Oswald', fontSize: 32 } );
 
         cashCont.add ( [ img, cashtxt, moneytxt ]);
 
@@ -54,7 +66,7 @@ class SceneA extends Phaser.Scene {
 
         let txtca = this.add.text ( -85, -33, 'Max Cards',  { color:'#990000', fontFamily: 'Oswald', fontSize: 20 } );
 
-        let txtcb = this.add.text (-85, -7, '5',  { color:'#3a3a3a', fontFamily: 'Oswald', fontSize: 32 } );
+        let txtcb = this.add.text (-85, -7, this.maxNumberOfCards,  { color:'#3a3a3a', fontFamily: 'Oswald', fontSize: 32 } );
 
         maxCardsCont.add ( [ imgc, txtca, txtcb ]);
 
@@ -111,7 +123,7 @@ class SceneA extends Phaser.Scene {
 
         const bbsx = 40 + (bbs/2), bbsy = 550 + (bbs/2);
 
-        this.add.text ( 40, 500, 'Winning Combination', { color : 'black', fontSize: 28, fontFamily: 'Oswald'} );
+        this.add.text ( 40, 500, 'Bingo Pattern', { color : 'black', fontSize: 28, fontFamily: 'Oswald'} );
 
         //this.combTxt = this.add.text ( 40, 540, 'Name of Combination', { color:'#6a6a6a', fontSize: 26, fontFamily:'Oswald'});
 
@@ -154,7 +166,7 @@ class SceneA extends Phaser.Scene {
 
         //draw countdown...
         
-        this.drawCountDown = this.add.container ( 480 + dsw/2, 550 + dsh/2 );
+        let dcount = this.add.container ( 480 + dsw/2, 550 + dsh/2 ).setSize ( 356, 180 ).setInteractive();
 
         let rctj = this.add.rectangle ( 0, 0, 356, 180, 0x6e6e6e, 0.8 );
 
@@ -162,75 +174,97 @@ class SceneA extends Phaser.Scene {
 
         let txtb = this.add.text ( 0, 20, '00:00:00', { color : 'white', fontSize: 46, fontFamily: 'Oswald'} ).setOrigin(0.5);
 
-        this.drawCountDown.add ([ rctj, txta, txtb ]);
+        dcount.add ([ rctj, txta, txtb ]);
+
+        dcount.on('pointerdown', () => {
+            console.log ('pindot');
+            this.startDraw();
+        });
+
+        this.drawCountDown = dcount;
 
 
+        //add image for the balls drawn container
         const csp = 5, cs = (460 - (csp * 4))/5 ;
 
         const csx = 900 , csy = 550 + (cs/2);
 
         this.add.image ( csx, 550 + dsh/2, 'ballscont' );
 
-        let rctd = this.add.rectangle ( 480 + dsw/2, 550 + dsh/2, dsw, dsh ).setInteractive ();
-
-        rctd.once ('pointerdown', function () {
-            this.startDraw();
-        }, this);
-
-
+        //create container for balls drawn..
         this.myballs = this.add.container (0, 0);
 
 
-        //create card space..
+        //create background for card space.. 
+        this.add.rectangle ( 1025, 0, 895, 1080, 0xf3f3f3, 1 ).setOrigin(0); 
+       
+        //create container for cards..
+        this.cardContainer = this.add.container ( 0, 0 );
 
-        var _this = this;
-
-        const cardspW = 895, cardspX = 1025; // 1920 - 895
-
-        const btx = 1025 + (895/2), bty = 1080/2;
-
-        this.add.rectangle ( cardspX, 0, cardspW, 1080, 0xf3f3f3, 1 ).setOrigin(0); //background
-
-
-        this.clickBuyCont = this.add.container ( btx, bty ).setSize ( 615, 115 ).setInteractive ();
-        
-        let rctc = this.add.rectangle ( 0,0, 600, 100, 0x0a0a0a, 0.8 );
-
-        let rcte = this.add.rectangle ( 0,0, 615, 115).setStrokeStyle (2, 0x0a0a0a);
-
-        let txtc = this.add.text ( 0, 0, 'Click Here To Buy A Card', { color:'white', fontSize: 38, fontFamily:'Oswald' }).setOrigin(0.5);
-
-        //let note = this.add.text ( 0, 100, 'In order to hit the jackpot, complete the pattern within the designated draw count.', { color:'black', fontSize: 26, fontFamily:'Oswald' }).setOrigin(0.5);
 
         
+        //initialize game..
+        this.initGame();       
 
-        this.clickBuyCont.add ([ rctc, rcte, txtc ]);
+    }
 
-        this.clickBuyCont.once ('pointerdown', function () {
+    initGame () {
 
-            this.destroy();
-
-            _this.buyCard ();
-
-        });
-
-
-        //card number 
         this.drawCount = 0;
 
         this.ballsShownCounter = 0;
 
         this.cardsArr = [];
 
-        this.maxNumberOfCards = 3;
-
         this.cardCounter = 0;
 
         this.shownCard = 0;
 
-        this.cardContainer = this.add.container ( 0, 0 );
+        this.gameId = Math.floor ( Math.random() * gameData.length );
 
-        this.showGame ();
+        this.showInitialCardBuy ();
+
+        this.showPatternAndPrizes ( );
+
+    }
+
+    showInitialCardBuy () 
+    {
+
+        this.initCardBuyCont = this.add.container ( 1025, 0 );
+
+        const btx = 895/2, bty = 1080/2;
+
+        const btw = 650, bth = 400;
+
+        let miniCont = this.add.container ( 1920 + btw/2, bty ).setSize ( btw, bth ).setInteractive ();
+
+        let bRct = this.add.rectangle ( 0, 0, btw, bth, 0xffffff, 1).setStrokeStyle ( 3, 0x0a0a0a );
+
+        let mainTxt = this.add.text ( 0, -10, 'Click Here To Purchase A Card', { fontSize : 34, fontFamily : 'Oswald', color : 'black' }).setOrigin(0.5);
+
+        let tipTxt = this.add.text ( 0, 175, 'Tip : Make sure to show the winning card before declaring "BINGO"! ', { fontSize : 22, fontFamily : 'Oswald', color : 'black' }).setOrigin(0.5);
+
+
+        miniCont.add ( [bRct, mainTxt, tipTxt] );
+
+        miniCont.on('pointerdown', () => {
+
+            this.initCardBuyCont.destroy ();
+
+            this.buyCard ();
+
+        });
+
+        this.add.tween ( {
+            targets : miniCont, 
+            x : btx,
+            duration : 300,
+            ease : 'Linear'
+        });
+
+
+        this.initCardBuyCont.add ( miniCont );
 
     }
 
@@ -261,7 +295,7 @@ class SceneA extends Phaser.Scene {
 
         let rect = this.add.rectangle ( 0, 0, 380, 100, 0x0a0a0a, 0.5 );
 
-        let txt = this.add.text ( 0, -10, 'Loading', { color:'white', fontFamily : 'Oswald', fontSize : 22 }).setOrigin(0.5);
+        let txt = this.add.text ( 0, -10, 'Generating Card..', { color:'white', fontFamily : 'Oswald', fontSize : 22 }).setOrigin(0.5);
 
         cont.add ([rect, txt ]);
 
@@ -325,28 +359,13 @@ class SceneA extends Phaser.Scene {
 
         for ( var i = 0; i < btns.length; i++ ) {
 
-            let mycont = this.add.container ( btx + i * ( btw + bts ), bty ).setSize ( btw, bth ).setData ('id', i ).setName ('btn'+i).setInteractive();
-            
-            let rt = this.add.rectangle ( 0, 0, btw, bth, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a );
+            let mycont = new NavButton ( this, btx + i * ( btw + bts ), bty, [], i, btw, bth, btns[i], 40 );
 
-            let txtadd = this.add.text ( 0, 0, btns[i], { color : '#3a3a3a', fontSize : 40, fontFamily: 'Oswald' } ).setOrigin (0.5);
-        
-            mycont.add ( [ rt, txtadd ] );
-
-            mycont.on ('pointerover', function () {
-                this.first.setFillStyle (0xe3e3e3, 1);
-            }); 
-            mycont.on ('pointerout', function () {
-                this.first.setFillStyle (0xffffff, 1);
-            });
-            mycont.on ('pointerup', function () {
-                this.first.setFillStyle (0xffffff, 1);
-            });
             mycont.on ('pointerdown', function () {
                 
                 this.first.setFillStyle (0xffff00, 1 );
 
-                switch ( this.getData ('id') ) {
+                switch ( this.id ) {
                     case 0 : 
                         _this.prevCard ();
                         break;
@@ -355,6 +374,7 @@ class SceneA extends Phaser.Scene {
                         break;
                     default:
                 }
+
             });
             
             this.navCont.add ( mycont );
@@ -381,45 +401,42 @@ class SceneA extends Phaser.Scene {
 
         const bx = 1025 + (895/2), by = 950;
 
-        this.controlCont = this.add.container ( bx, 1080 + bh/2 ).setSize( bw, bh).setInteractive ();
-
-        let rctc = this.add.rectangle ( 0,0, bw, bh, 0xffffff, 1 ).setStrokeStyle (2, 0x0a0a0a );
-
-        let txtc = this.add.text ( 0, 0, txt, { color:'black', fontSize: 38, fontFamily:'Oswald' }).setOrigin(0.5);
-
-        this.controlCont.add ([ rctc, txtc ]);
-
-        
-        this.controlCont.on ('pointerover', function () {
-            this.first.setFillStyle (0xe3e3e3, 1)
-        });
-        this.controlCont.on ('pointerout', function () {
-            this.first.setFillStyle (0xffffff, 1)
-        });
-        this.controlCont.on ('pointerup', function () {
-            this.first.setFillStyle (0xffffff, 1)
-        });
-        this.controlCont.on ('pointerdown', function () {
+        let controlBtn = new MyButton ( this, bx, 1080 + bh/2, [], bw, bh, txt, 38 );
+     
+        controlBtn.on ('pointerdown', function () {
 
             this.first.setFillStyle ( 0xffff00, 1 );
 
             btnFunc ();
-            // if ( !gameStarted ) {
-            //     _this.buyCard ();
-            // }else {
-            //     _this.declareBingo();
-            // }
             
         });
 
         this.add.tween ({
-            targets : this.controlCont,
+            targets : controlBtn,
             y : by,
-            duration: 300,
-            delay : 500,
-            ease : 'Linear'
+            duration: 200,
+            delay : 300,
+            ease : 'Power2'
         });
 
+        this.controlCont = controlBtn;
+
+    }
+
+    removeControlBtn () 
+    {
+        
+        this.controlCont.removeInteractive ();
+
+        this.add.tween ({
+            targets : this.controlCont,
+            y : '+=200',
+            duration : 200,
+            ease : 'Linear',
+            onComplete : () => {
+                this.controlCont.destroy ();
+            }
+        });
 
     }
 
@@ -539,58 +556,59 @@ class SceneA extends Phaser.Scene {
         }
     }
 
-    showGame () 
+    showPatternAndPrizes () 
     {
 
-        //var _this = this;
 
-        const randGame = Math.floor (Math.random() * gameData.length );
+        //const randGame = 2; //Math.floor (Math.random() * gameData.length );
 
-        //const randGame = 0;
+        const points = gameData [ this.gameId ].points;
 
-        const points = gameData [ randGame ].points;
+        let counter = 0; 
 
-        let counter = 0;
+        let blinkOn = false;
 
-        if ( points.length > 1 ) {
+        this.patternTimer = this.time.addEvent({
 
-            let timer = this.time.addEvent({
+            delay: 1000, // ms
+            callback: () => {
 
-                delay: 1000, // ms
-                callback: function () {
+                if ( points.length > 1 ) {
 
                     this.winCont.iterate ( function (child) {
                         child.setFillStyle (0xffffff, 1);
                     });
-
+    
                     for ( var i = 0; i < points[counter].length; i++) {
                         this.winCont.getAt ( points[counter] [i] ).setFillStyle( 0xffff00, 1 );
                     }
-
+    
                     counter += 1;
-
+    
                     if ( counter >= points.length ) counter = 0;
 
-                },
-                //args: [],
-                callbackScope: this,
-                loop: true
-            });
+                }else {
 
-        
-        }else {
+                    blinkOn = !blinkOn;
 
-            for ( var i = 0; i < points[0].length; i++) {
-                this.winCont.getAt ( points[0] [i] ).setFillStyle( 0xffff00, 1 );
-            }
+                    let clr = blinkOn ? 0xffff00 : 0xffffff;
 
-        }
+                    for ( var i = 0; i < points[0].length; i++) {
+                        this.winCont.getAt ( points[0] [i] ).setFillStyle( clr, 1 );
+                    }
 
-        this.jackpotTxt.text = gameData[randGame].jackpot.toLocaleString()  + '.00';
+                }
+                
 
-        this.consolationTxt.text = gameData[randGame].consolation.toLocaleString()  + '.00'
+            },
+            //args: [],
+            callbackScope: this,
+            loop: true
+        });
 
-        this.gameId = randGame;
+        this.jackpotTxt.text = gameData[this.gameId].jackpot.toLocaleString()  + '.00';
+
+        this.consolationTxt.text = gameData[this.gameId].consolation.toLocaleString()  + '.00';
 
     }
 
@@ -623,7 +641,6 @@ class SceneA extends Phaser.Scene {
                 delay : Phaser.Math.Between (0, 300 )
             });
 
-            
         }
 
     }
@@ -631,31 +648,27 @@ class SceneA extends Phaser.Scene {
     startDraw () 
     {
 
-
-        this.drawStarted = true;
+        //this.drawStarted = true;
 
         this.numbersDrawn = [];
 
-
-        this.drawCountDown.destroy ();
+        this.drawCountDown.visible = false;
 
         this.createBalls ();
 
         if ( this.cardCounter > 0 ) {
             
-            this.add.tween ({
-                targets : this.controlCont,
-                y : '+=200',
-                duration : 200,
-                ease : 'Linear',
-                onComplete : () => {
-                    
-                    this.controlCont.destroy ();
+            this.removeControlBtn ();
 
-                    this.addControlBtn ('Declare Bingo', () => this.declareBingo() );
-                }
-            });
+            this.time.delayedCall ( 500, function () {
 
+                //console.log ('declare btn created' );
+
+                this.addControlBtn ('Declare Bingo', () => this.declareBingo() );
+
+            }, [], this );
+
+           
             this.cardContainer.iterate ( function (child) {
                 child.isActive = true;
             });
@@ -665,7 +678,8 @@ class SceneA extends Phaser.Scene {
 
         }else {
 
-            this.clickBuyCont.destroy ();
+            this.initCardBuyCont.destroy ();
+
         }
 
         this.time.delayedCall ( 2000, function () {
@@ -678,14 +692,14 @@ class SceneA extends Phaser.Scene {
     startDrawAnimation () 
     {
 
-        const drawGap = 10000;
+        //const drawGap = 3000;
 
         //var _this = this;
 
         this.startDrawAnim = true;
 
         this.drawTimer = this.time.addEvent({
-            delay: drawGap,                // ms
+            delay: this.drawGap,                // ms
             callback: this.getNumber,
             //args: [],
             callbackScope: this,
@@ -716,19 +730,19 @@ class SceneA extends Phaser.Scene {
         if ( arr.length > 0 ) {
 
             //faker draw
-            //const temp = this.cardContainer.getByName ( 'crd0').arr;
+            // const tmp = this.cardContainer.getByName ('crd0').arr;
 
-           // const r = Math.floor ( this.drawCount / 5 ), c = this.drawCount % 5;
+            // const tmpPoint = gameData [ this.gameId ].points [ 0 ] [ this.drawCount ];
 
-            
+            // const r = Math.floor ( tmpPoint/5), c = tmpPoint % 5;
 
-            this.drawCount += 1;
+            // const randomBall = tmp [r][c] - 1;
+
             
             const randomBall =  arr [ Math.floor ( Math.random() * arr.length ) ] ;
 
-            //const randomBall = temp [r][c] - 1;
-
-
+            this.drawCount += 1;
+                    
             let ball = this.circDraw.getByName ( 'crc' + randomBall );
 
             ball.isCaptured = true;
@@ -744,9 +758,9 @@ class SceneA extends Phaser.Scene {
                 y : '-=220',
                 duration : 300,
                 ease : 'Linear',
-                onComplete : function () {
+                onComplete : () => {
                     ball.destroy ();
-                    _this.showNumber ( ball.id );
+                    this.showNumber ( ball.id );
                 }
             });
 
@@ -834,19 +848,23 @@ class SceneA extends Phaser.Scene {
         
         this.drawTimer.remove();
 
-        this.circDraw.each ( function ( child ) {
+        this.circDraw.each ( (child) => {
 
-            child.reset();
+            if ( !child.isCaptured ) {
 
-            _this.add.tween ({
-                targets : child,
-                y : 1010 - child.h,
-                //easeParams : [ 0, 1.5 ],
-                ease : 'Bounce',
-                duration : 1000,
-                //delay : Phaser.Math.Between (0, 300 )
-            });
-    
+                if ( child.x < 520 ) child.x = 520;
+
+                if ( child.x > 800 ) child.x = 800;
+
+                this.add.tween ({
+                    targets : child,
+                    y : 1010 - child.h,
+                    easeParams : [ 1, 1.5 ],
+                    ease : 'Bounce',
+                    duration : 1000,
+                    //delay : Phaser.Math.Between (0, 300 )
+                });
+            }
         });
 
     }
@@ -882,7 +900,22 @@ class SceneA extends Phaser.Scene {
     
             }else {
     
-                this.declareWinner ();
+                this.removePrompt ();
+
+                this.stopDrawAnimation ();
+       
+                this.removeControlBtn ();
+
+                this.illuminateCells ( cc );
+                
+                this.showCompletePrompt ('Confirmed, Congratulations!', 34, 'OK', () => {
+
+                    this.removePrompt ();
+
+                    this.addControlBtn ('Clean Up', () => this.cleanUp () );
+
+                });
+
             }
 
             
@@ -891,14 +924,49 @@ class SceneA extends Phaser.Scene {
         
     }
 
-    declareWinner () 
+    cleanUp ()
     {
-
-        this.removePrompt ();
-
-        this.showTxtPrompt ('Bingo! Congratulations.', 34 );
+        //..
         
-        this.illuminateCells ( cc );
+        this.removeControlBtn ();
+
+        this.blinkTimer.remove();
+
+        this.patternTimer.remove ();
+
+        this.circDraw.destroy ();
+
+        this.navCont.destroy ();
+
+        this.timerprogress.setVisible ( false );
+
+        this.cardContainer.each ( (child) => {
+            child.destroy ();
+        });
+
+        this.myballs.each ( (child) => {
+            child.destroy ();
+        });
+
+        this.winCont.iterate ( ( child ) => {
+            child.setFillStyle (0xffffff, 1);
+        });
+
+        this.indicatorsCont.iterate ( ( child ) => {
+            child.first.setFillStyle (0xffffff, 1);
+        });
+
+
+        //reset 
+        this.time.delayedCall ( 1000, () => {
+
+            this.drawCountDown.setVisible (true);
+
+            this.initGame ();
+
+        }, [], this);
+
+
 
     }
 
@@ -991,67 +1059,60 @@ class SceneA extends Phaser.Scene {
 
     }
 
-    showPrompt ( txt, myFunction ) 
+    showCompletePrompt ( txt, fs, btnTxt, btnFunc, withCancel = false ) 
     {
         
         //1025.. 895
-
         var _this = this;
 
         
-        this.showTxtPrompt ( txt, 34, true );
+        this.showTxtPrompt ( txt, fs, true );
 
         const cx = 1025 + (895/2), cy = 1080/2;
 
-        const btnArr = ['confirm', 'cancel'];
+        //const btnArr = ['confirm', 'cancel'];
 
         const bw = 160, bh = 70, bsp = 20;
 
-        const btx = cx - (( bw * btnArr.length ) + bsp)/2 + ( bw/2 ), 
+        const btx = cx - (( bw * 2 ) + bsp)/2 + ( bw/2 ), 
 
               bty = cy + 40;
-        
 
-        for ( var i = 0; i < btnArr.length; i++ ) {
 
-            let btnCont = this.add.container ( btx + (i * ( bw + bsp )), bty ).setSize ( bw, bh ).setData ('id', i ).setInteractive ();
+        //btn..
+        const tmpX = withCancel ? btx : cx;
 
-            let rct = this.add.rectangle ( 0, 0, bw, bh, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a );
+        let btn = new MyButton ( this, tmpX, bty, [], bw, bh, btnTxt );
 
-            let txt = this.add.text ( 0, 0, btnArr[i],  { color:'#0a0a0a', fontFamily:'Oswald', fontSize: bh*0.4 }  ).setOrigin (0.5);
+        btn.on ('pointerdown', function () {
+
+            this.first.setFillStyle ( 0xff9999, 1 );
             
-            btnCont.add ([ rct, txt ]);
+            btnFunc ();
+        });
 
-            btnCont.on ('pointerover', function () {
-                this.first.setFillStyle (0xcecece, 1);
-            });
-            btnCont.on ('pointerout', function () {
-                this.first.setFillStyle ( 0xffffff, 1);
-            });
-            btnCont.on ('pointerup', function () {
-                this.first.setFillStyle ( 0xffffff, 1);
-            });
-            btnCont.on ('pointerdown', function () {
+        this.promptCont.add ( btn );
+
+
+        if ( withCancel ) {
+
+            let cancel = new MyButton ( this, btx + (bw+bsp), bty, [], bw, bh, 'Cancel' );
+
+            cancel.on ('pointerdown', function () {
 
                 this.first.setFillStyle ( 0xff9999, 1);
                 
-                switch ( this.getData('id')) {
-                    case 0 :
-                        //...
-                        myFunction ();
-
-                        break;
-                    case 1 : 
-                        _this.removePrompt ();
-                        break;
-                    default:
-                }
-
+                //_this.removePrompt ();
+                console.log ( 'this')
+                
             });
-            
-            this.promptCont.add (btnCont);
-        
+
+            this.promptCont.add ( cancel );
+
+
         }
+        
+        
 
     }
     
