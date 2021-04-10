@@ -222,7 +222,7 @@ class SceneA extends Phaser.Scene {
 
         this.cardsArr = [];
 
-        this.maxNumberOfCards = 5;
+        this.maxNumberOfCards = 3;
 
         this.cardCounter = 0;
 
@@ -288,7 +288,7 @@ class SceneA extends Phaser.Scene {
     
                     this.addCardNav ();
     
-                    this.addControlBtn ();
+                    this.addControlBtn ('+ Add Card', () => this.buyCard () );
     
                 }
 
@@ -313,12 +313,9 @@ class SceneA extends Phaser.Scene {
         //895w 1025x
         this.navCont = this.add.container ( 1025, 0 );
 
-
         var _this = this;
 
         const bts = 400, btw = 100, bth = 68;
-
-        //const tw = (btw*2) + bts;
 
         const btx = ( (895 - ((btw*2)+bts))/2 ) + (btw/2), 
              
@@ -336,7 +333,6 @@ class SceneA extends Phaser.Scene {
         
             mycont.add ( [ rt, txtadd ] );
 
-
             mycont.on ('pointerover', function () {
                 this.first.setFillStyle (0xe3e3e3, 1);
             }); 
@@ -346,7 +342,6 @@ class SceneA extends Phaser.Scene {
             mycont.on ('pointerup', function () {
                 this.first.setFillStyle (0xffffff, 1);
             });
-            
             mycont.on ('pointerdown', function () {
                 
                 this.first.setFillStyle (0xffff00, 1 );
@@ -373,14 +368,14 @@ class SceneA extends Phaser.Scene {
 
     }
 
-    addControlBtn ( gameStarted = false ) 
+    addControlBtn ( txt, btnFunc ) 
     {
 
         //console.log ('this is mand');
 
         var _this = this;
 
-        let txt = !gameStarted ? '+ Add Card' : 'Declare Bingo';
+        //let txt = !gameStarted ? '+ Add Card' : 'Declare Bingo';
 
         const bw = 600, bh = 70;
 
@@ -396,7 +391,7 @@ class SceneA extends Phaser.Scene {
 
         
         this.controlCont.on ('pointerover', function () {
-            this.first.setFillStyle (0xffff00, 1)
+            this.first.setFillStyle (0xe3e3e3, 1)
         });
         this.controlCont.on ('pointerout', function () {
             this.first.setFillStyle (0xffffff, 1)
@@ -404,16 +399,16 @@ class SceneA extends Phaser.Scene {
         this.controlCont.on ('pointerup', function () {
             this.first.setFillStyle (0xffffff, 1)
         });
-
         this.controlCont.on ('pointerdown', function () {
 
-            this.first.setFillStyle ( 0xff9999, 1 );
+            this.first.setFillStyle ( 0xffff00, 1 );
 
-            if ( !gameStarted ) {
-                _this.buyCard ();
-            }else {
-                _this.declareBingo();
-            }
+            btnFunc ();
+            // if ( !gameStarted ) {
+            //     _this.buyCard ();
+            // }else {
+            //     _this.declareBingo();
+            // }
             
         });
 
@@ -428,7 +423,8 @@ class SceneA extends Phaser.Scene {
 
     }
 
-    addCard () {
+    addCard () 
+    {
 
         const cardspX = 1025, cardspW = 1920 - cardspX;
 
@@ -460,7 +456,8 @@ class SceneA extends Phaser.Scene {
 
     }
 
-    prevCard ( ) {
+    prevCard ( ) 
+    {
 
         var _this = this;
 
@@ -501,7 +498,8 @@ class SceneA extends Phaser.Scene {
 
     }
 
-    nextCard () {
+    nextCard () 
+    {
 
         var _this = this;
 
@@ -540,8 +538,6 @@ class SceneA extends Phaser.Scene {
 
         }
     }
-
-    
 
     showGame () 
     {
@@ -632,7 +628,8 @@ class SceneA extends Phaser.Scene {
 
     }
 
-    startDraw () {
+    startDraw () 
+    {
 
 
         this.drawStarted = true;
@@ -648,14 +645,14 @@ class SceneA extends Phaser.Scene {
             
             this.add.tween ({
                 targets : this.controlCont,
-                y : '+=100',
+                y : '+=200',
                 duration : 200,
                 ease : 'Linear',
                 onComplete : () => {
                     
                     this.controlCont.destroy ();
 
-                    this.addControlBtn (true)
+                    this.addControlBtn ('Declare Bingo', () => this.declareBingo() );
                 }
             });
 
@@ -681,7 +678,7 @@ class SceneA extends Phaser.Scene {
     startDrawAnimation () 
     {
 
-        const drawGap = 3000;
+        const drawGap = 10000;
 
         //var _this = this;
 
@@ -828,7 +825,8 @@ class SceneA extends Phaser.Scene {
 
     }
 
-    stopDrawAnimation () {
+    stopDrawAnimation () 
+    {
 
         var _this = this;
 
@@ -856,7 +854,7 @@ class SceneA extends Phaser.Scene {
     declareBingo () 
     {
 
-        this.showTxtPrompt ('Checking Player\'s Card..', 28 );
+        this.showTxtPrompt ('Game Paused. Checking Player\'s Card..', 26 );
 
         this.drawTimer.paused = true;
 
@@ -866,15 +864,15 @@ class SceneA extends Phaser.Scene {
 
         //console.log ( cc );
 
-        this.time.delayedCall ( 500, function () {
+        this.time.delayedCall ( 1000, function () {
 
             if ( cc.length == 0 ) {
 
                 this.removePrompt ();
 
-                this.showTxtPrompt ('False Winner! Resuming Draw..',  28 ) ;
+                this.showTxtPrompt ('False Winner! Resuming Game..',  28 ) ;
     
-                this.time.delayedCall ( 500, function () {
+                this.time.delayedCall ( 1000, function () {
                     
                     this.drawTimer.paused = false;
 
@@ -884,17 +882,24 @@ class SceneA extends Phaser.Scene {
     
             }else {
     
-                this.removePrompt ();
-
-                this.showTxtPrompt ('Bingo! Congratulations.', 30 );
-                
-                this.illuminateCells ( cc );
+                this.declareWinner ();
             }
 
             
         }, [], this);
 
         
+    }
+
+    declareWinner () 
+    {
+
+        this.removePrompt ();
+
+        this.showTxtPrompt ('Bingo! Congratulations.', 34 );
+        
+        this.illuminateCells ( cc );
+
     }
 
     illuminateCells ( arr ) 
