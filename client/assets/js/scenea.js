@@ -295,7 +295,7 @@ class SceneA extends Phaser.Scene {
 
         let rect = this.add.rectangle ( 0, 0, 380, 100, 0x0a0a0a, 0.5 );
 
-        let txt = this.add.text ( 0, -10, 'Generating Card..', { color:'white', fontFamily : 'Oswald', fontSize : 22 }).setOrigin(0.5);
+        let txt = this.add.text ( 0, -10, 'Generating New Card..', { color:'white', fontFamily : 'Oswald', fontSize : 22 }).setOrigin(0.5);
 
         cont.add ([rect, txt ]);
 
@@ -312,30 +312,26 @@ class SceneA extends Phaser.Scene {
 
             cont.destroy();
 
-            if ( this.cardCounter < this.maxNumberOfCards ) {
+            if ( this.cardCounter > 0 ) {
 
-                if ( this.cardCounter > 0 ) {
-    
-                    this.shrinkShownCard (1175);
-    
-                }else {
-    
-                    this.addCardNav ();
-    
-                    this.addControlBtn ('+ Add Card', () => this.buyCard () );
-    
-                }
+                this.shrinkShownCard (1175);
 
-                this.addCard();
+            }else {
 
-                if ( this.cardCounter >= this.maxNumberOfCards ){
-                    
-                    this.controlCont.first.setFillStyle( 0xdedede, 1);
+                this.addCardNav ();
 
-                    this.controlCont.removeInteractive ().setAlpha (0.9);
+                this.addControlBtn ('+ Add Card', () => this.buyCard () );
 
-                }
             }
+
+            this.addCard();
+
+            //disable nav btns accordingly..
+            this.evalNav ();
+
+            //disable btn if more than equal to max cards...
+            this.controlCont.setBtnEnabled ( this.cardCounter < this.maxNumberOfCards );
+
             
         }, [], this );
    
@@ -359,13 +355,14 @@ class SceneA extends Phaser.Scene {
 
         for ( var i = 0; i < btns.length; i++ ) {
 
-            let mycont = new NavButton ( this, btx + i * ( btw + bts ), bty, [], i, btw, bth, btns[i], 40 );
+            let mycont = new NavButton ( this, btx + i * ( btw + bts ), bty, [], i, btw, bth, btns[i], 40 ).setName ('nav' + i);
 
             mycont.on ('pointerdown', function () {
                 
                 this.first.setFillStyle (0xffff00, 1 );
 
                 switch ( this.id ) {
+
                     case 0 : 
                         _this.prevCard ();
                         break;
@@ -376,16 +373,33 @@ class SceneA extends Phaser.Scene {
                 }
 
             });
+
+            mycont.on ('pointerup', () => this.evalNav () );
+
             
             this.navCont.add ( mycont );
         }
 
-        let rct = this.add.rectangle ( 447.5, bty, 370, bth, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a );
+        let rct = this.add.rectangle ( 447.5, bty, 370, bth, 0xffffff, 1 ).setStrokeStyle ( 2, 0x0a0a0a );
 
         let txt = this.add.text ( 447.5, bty, 'Card : 0/0', { color:'#3a3a3a', fontSize: 40, fontFamily: 'Oswald' }).setOrigin (0.5).setName ('crdTxt');
 
         this.navCont.add ([ rct, txt ]);
 
+    }
+
+    evalNav () 
+    {
+
+        const prev = this.navCont.getByName ('nav0');
+
+        const nxt = this.navCont.getByName ('nav1');
+
+        prev.setBtnEnabled ( this.shownCard > 0 );
+
+        nxt.setBtnEnabled ( this.shownCard < (this.cardCounter-1) );
+
+        
     }
 
     addControlBtn ( txt, btnFunc ) 
@@ -480,7 +494,6 @@ class SceneA extends Phaser.Scene {
 
         const cardspX = 1025, cardspW = 1920 - cardspX;
 
-
         if ( this.shownCard > 0 ) {
 
             this.shrinkShownCard ( 1770 );
@@ -512,6 +525,7 @@ class SceneA extends Phaser.Scene {
             this.navCont.last.text = 'Card : ' + (this.shownCard + 1) + '/' + this.cardCounter;
 
         }
+    
 
     }
 
@@ -1047,9 +1061,9 @@ class SceneA extends Phaser.Scene {
 
         const cx = 1025 + (895/2), cy = 1080/2;
 
-        let bg = this.add.rectangle ( cx, cy, 895, 1080, 0x0a0a0a, 0.4 ).setInteractive ();
+        let bg = this.add.rectangle ( cx, cy, 895, 1080, 0x0a0a0a, 0.3 ).setInteractive ();
 
-        let mrct = this.add.rectangle ( cx, cy, 500, 250, 0xffffff, 0.8 ).setStrokeStyle ( 1, 0x0a0a0a );
+        let mrct = this.add.rectangle ( cx, cy, 500, 250, 0xffffff, 0.9 ).setStrokeStyle ( 1, 0x0a0a0a );
 
         let cyy = withButton ? cy - 60 : cy;
 

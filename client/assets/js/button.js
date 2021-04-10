@@ -31,5 +31,26 @@ class MyButton extends Phaser.GameObjects.Container {
         scene.add.existing(this);
 
     }
+
+    setBtnEnabled ( enabled = false ) {
+
+        if ( !enabled ) {   
+
+            this.removeInteractive ();
+
+            this.alpha = 0.8;
+
+            this.first.setFillStyle ( 0xdedede, 1 );
+
+        }else {
+
+            this.setInteractive ();
+
+            this.alpha = 1;
+
+            this.first.setFillStyle ( 0xffffff, 1 );
+        }
+        
+    }
     
 }

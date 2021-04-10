@@ -74,7 +74,7 @@ class BingoCard extends Phaser.GameObjects.Container {
 
             let numCont = scene.add.container ( bsx + ix * ( bs + bsp ), bsyb + iy * ( bs + bsp ) ).setSize( bs, bs ).setData ( 'isDotted', false ).setName ('cell' + i);
 
-            let rctb = scene.add.rectangle ( 0, 0, bs, bs, 0xf5f5f5, 1 ).setStrokeStyle ( 1, 0x6c6c6c );
+            let rctb = scene.add.rectangle ( 0, 0, bs, bs, 0xffffff, 1 ).setStrokeStyle ( 1, 0x6c6c6c );
 
             let txtb;
 

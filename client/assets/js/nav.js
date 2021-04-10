@@ -6,6 +6,10 @@ class NavButton extends MyButton {
 
         this.id = id;
 
+        this.setBtnEnabled ( false );
+
     }
+
+    
     
 }
