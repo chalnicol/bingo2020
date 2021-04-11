@@ -364,15 +364,15 @@ class SceneA extends Phaser.Scene {
              
               bty = 80;
 
-        const btns = [ '<', '>' ];
+        const btns = [ 'prev', 'nxt' ];
 
         for ( var i = 0; i < btns.length; i++ ) {
 
-            let mycont = new NavButton ( this, btx + i * ( btw + bts ), bty, i, btw, bth, btns[i], 40 ).setName ('nav' + i);
+            let mycont = new NavButton ( this, btx + i * ( btw + bts ), bty, i, btw, bth, btns[i] ).setName ('nav' + i);
 
             mycont.on ('pointerdown', function () {
                 
-                this.first.setFillStyle (0xffff00, 1 );
+                this.clicked ();
 
                 switch ( this.id ) {
 
@@ -393,11 +393,12 @@ class SceneA extends Phaser.Scene {
             this.navCont.add ( mycont );
         }
 
-        let rct = this.add.rectangle ( 447.5, bty, 370, bth, 0xffffff, 1 ).setStrokeStyle ( 2, 0x0a0a0a );
+        //let rct = this.add.rectangle ( 447.5, bty, 370, bth, 0xffffff, 1 ).setStrokeStyle ( 2, 0x0a0a0a );
+        let img = this.add.image ( 447.5, bty, 'cardnav');
 
         let txt = this.add.text ( 447.5, bty, 'Card : 0/0', { color:'#3a3a3a', fontSize: 40, fontFamily: 'Oswald' }).setOrigin (0.5).setName ('crdTxt');
 
-        this.navCont.add ([ rct, txt ]);
+        this.navCont.add ([ img, txt ]);
 
     }
 
@@ -428,11 +429,11 @@ class SceneA extends Phaser.Scene {
 
         const bx = 1025 + (895/2), by = 950;
 
-        let controlBtn = new MyButton ( this, bx, 1080 + bh/2, bw, bh, txt, 38 );
+        let controlBtn = new MyButton ( this, bx, 1080 + bh/2, bw, bh, 'control', txt, 38 );
      
         controlBtn.on ('pointerdown', function () {
 
-            this.first.setFillStyle ( 0xffff00, 1 );
+            this.clicked ();
 
             btnFunc ();
             
@@ -441,9 +442,9 @@ class SceneA extends Phaser.Scene {
         this.add.tween ({
             targets : controlBtn,
             y : by,
-            duration: 200,
+            duration: 300,
             delay : 300,
-            ease : 'Power2'
+            ease : 'Bounce'
         });
 
         this.controlCont = controlBtn;
@@ -1109,7 +1110,7 @@ class SceneA extends Phaser.Scene {
         //btn..
         const tmpX = withCancel ? btx : cx;
 
-        let btn = new MyButton ( this, tmpX, bty, bw, bh, btnTxt );
+        let btn = new MyButton ( this, tmpX, bty, bw, bh, '', btnTxt );
 
         btn.on ('pointerdown', function () {
 
@@ -1123,7 +1124,7 @@ class SceneA extends Phaser.Scene {
 
         if ( withCancel ) {
 
-            let cancel = new MyButton ( this, btx + (bw+bsp), bty, bw, bh, 'Cancel' );
+            let cancel = new MyButton ( this, btx + (bw+bsp), bty, bw, bh, '', 'Cancel' );
 
             cancel.on ('pointerdown', function () {
 

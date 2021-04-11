@@ -34,8 +34,10 @@ class BingoCard extends Phaser.GameObjects.Container {
         
         //create card body 
         
-        const rct = scene.add.rectangle ( 0, 0, w, h, 0xffffff, 1 ).setStrokeStyle ( 2, 0x0a0a0a );
+        //const rct = scene.add.rectangle ( 0, 0, w, h, 0xffffff, 1 ).setStrokeStyle ( 2, 0x0a0a0a );
 
+        let rct = scene.add.image ( 0, 0, 'bingoBg');
+        
         this.add (rct);
 
         const top = -h/2, lft = -w/2;
@@ -99,7 +101,7 @@ class BingoCard extends Phaser.GameObjects.Container {
 
                     if ( !this.getData ('isDotted') ) {
                         
-                        let crc = scene.add.circle ( 0, 0, bs/2, 0x00ffff, 0.5 );
+                        let crc = scene.add.circle ( 0, 0, bs*0.45, 0x00aaff, 0.5 );
 
                         this.add ( crc );
 
