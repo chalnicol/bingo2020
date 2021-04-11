@@ -1,8 +1,8 @@
 class MyButton extends Phaser.GameObjects.Container {
 
-    constructor(scene, x, y, children, w, h, txt, fs = null ) {
+    constructor(scene, x, y, w, h, txt, fs = null ) {
 
-        super(scene, x, y, children);
+        super( scene, x, y, [] );
         
         // ...
 

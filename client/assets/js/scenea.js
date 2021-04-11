@@ -88,12 +88,11 @@ class SceneA extends Phaser.Scene {
 
             let letCont = this.add.container ( bsx, bsy + i * ( bs + bsp ));
 
-            let rcta = this.add.rectangle ( 0, 0, bs, bs, 0x6c6c6c, 1 ).setStrokeStyle ( 1, 0xcccccc );
+            let rcta = this.add.image ( 0, 0, 'indi');
 
-            let mtxt = this.add.text ( 0, 0, bingoTxt.charAt (i), {color:'white', fontFamily:'Oswald', fontSize: bs/2 } ).setOrigin(0.5);
+            let mtxt = this.add.text ( 0, 0, bingoTxt.charAt (i), { color:'#000', fontFamily:'Oswald', fontSize: bs/2  } ).setOrigin(0.5);
 
-            letCont.add ( [ rcta, mtxt ]);
-
+            letCont.add ( [ rcta, mtxt ] );
 
         }
 
@@ -105,7 +104,8 @@ class SceneA extends Phaser.Scene {
 
             let numCont = this.add.container ( bsxa + iy * ( bs + bsp ), bsy + ix * ( bs + bsp ) ).setName ('num' + i );
 
-            let rctb = this.add.rectangle ( 0, 0, bs, bs, 0xffffff, 1 ).setStrokeStyle ( 1, 0x6c6c6c );
+            //let rctb = this.add.rectangle ( 0, 0, bs, bs, 0xffffff, 1 ).setStrokeStyle ( 1, 0x6c6c6c );
+            let rctb = this.add.image ( 0, 0, 'indi', 1 );
 
             let ntxt = this.add.text ( 0, 0, i+1, {color:'#3a3a3a', fontFamily:'Oswald', fontSize: bs/2 } ).setOrigin(0.5);
 
@@ -115,7 +115,7 @@ class SceneA extends Phaser.Scene {
 
         }
 
-        //draw winning combination indicatior
+        //draw pattern indicatior
 
         this.winCont = this.add.container (0,0);
 
@@ -131,7 +131,8 @@ class SceneA extends Phaser.Scene {
 
             let ix = Math.floor ( i/5 ), iy = i% 5;
 
-            let winrct = this.add.rectangle ( bbsx + ix * ( bbs + bbsp), bbsy + iy * ( bbs+ bbsp), bbs, bbs, 0xffffff, 1 ).setStrokeStyle ( 1, 0x3a3a3a);
+            //let winrct = this.add.rectangle ( bbsx + ix * ( bbs + bbsp), bbsy + iy * ( bbs+ bbsp), bbs, bbs, 0xffffff, 1 ).setStrokeStyle ( 1, 0x3a3a3a);
+            let winrct = this.add.image ( bbsx + ix * ( bbs + bbsp), bbsy + iy * ( bbs+ bbsp), 'pattern', 0 );
 
             this.winCont.add ( winrct );
         }
@@ -141,14 +142,14 @@ class SceneA extends Phaser.Scene {
 
         this.add.text ( 40, 810, 'Jackpot Prize', { color : 'black', fontSize: 28, fontFamily: 'Oswald'} );
 
-        this.jackpotTxt = this.add.text ( 40, 850, '00.00', { color : '#ff0a0a', fontSize: 56, fontFamily: 'Oswald'} );
+        this.jackpotTxt = this.add.text ( 40, 850, '00.00', { color : '#ff0a0a', fontSize: 56, fontFamily: 'Oswald', stroke: '#ccc', strokeThickness: 3 } );
 
 
         //consolation..
 
         this.add.text ( 40, 940, 'Consolation Prize', { color : '#3a3a3a', fontSize: 22, fontFamily: 'Oswald'} );
 
-        this.consolationTxt = this.add.text ( 40, 980, '1,000.00', { color : '#ff3a3a', fontSize: 36, fontFamily: 'Oswald'} );
+        this.consolationTxt = this.add.text ( 40, 980, '1,000.00', { color : '#ff0a0a', fontSize: 36, fontFamily: 'Oswald', stroke: '#ccc', strokeThickness: 2 } );
 
 
         //draw draw machine..
@@ -161,7 +162,7 @@ class SceneA extends Phaser.Scene {
 
         //timer progress..
         
-        this.timerprogress = this.add.rectangle ( 483, 870, 354, 100, 0x99ff99, 1 ).setOrigin(0).setVisible(false);
+        this.timerprogress = this.add.rectangle ( 483, 800, 354, 100, 0x33ff33, 1 ).setOrigin(0).setVisible(false);
 
 
         //draw countdown...
@@ -187,12 +188,22 @@ class SceneA extends Phaser.Scene {
         //add image for the balls drawn container
         const csp = 5, cs = (460 - (csp * 4))/5 ;
 
-        const csx = 900 , csy = 550 + (cs/2);
+        const csx = 920 , csy = 550 + (cs/2);
 
-        this.add.image ( csx, 550 + dsh/2, 'ballscont' );
+        this.add.image ( csx, 550 + dsh/2, 'bot' );
 
         //create container for balls drawn..
         this.myballs = this.add.container (0, 0);
+
+        //create mask
+        var shape = this.add.image( csx, 550 + dsh/2, 'bot' ).setVisible(false)
+
+        var mask = shape.createBitmapMask();
+
+        this.myballs.setMask(mask);
+
+        //add another layer
+        this.add.image ( csx, 550 + dsh/2, 'top' );
 
 
         //create background for card space.. 
@@ -241,12 +252,14 @@ class SceneA extends Phaser.Scene {
 
         let bRct = this.add.rectangle ( 0, 0, btw, bth, 0xffffff, 1).setStrokeStyle ( 3, 0x0a0a0a );
 
-        let mainTxt = this.add.text ( 0, -10, 'Click Here To Purchase A Card', { fontSize : 34, fontFamily : 'Oswald', color : 'black' }).setOrigin(0.5);
+        let sRct = this.add.rectangle ( 0, 0, btw, 150, 0x3a3a3a, 0.9);
+        
+        let mainTxt = this.add.text ( 0, 0, 'Click Here To Purchase A Card', { fontSize : 34, fontFamily : 'Oswald', color : 'white' }).setOrigin(0.5);
 
-        let tipTxt = this.add.text ( 0, 175, 'Tip : Make sure to show the winning card before declaring "BINGO"! ', { fontSize : 22, fontFamily : 'Oswald', color : 'black' }).setOrigin(0.5);
+        let tipTxt = this.add.text ( 0, 95, 'Tip : Make sure to show the winning card before declaring "BINGO"! ', { fontSize : 20, fontFamily : 'Oswald', color : 'black' }).setOrigin(0.5);
 
 
-        miniCont.add ( [bRct, mainTxt, tipTxt] );
+        miniCont.add ( [bRct, sRct, mainTxt, tipTxt] );
 
         miniCont.on('pointerdown', () => {
 
@@ -355,7 +368,7 @@ class SceneA extends Phaser.Scene {
 
         for ( var i = 0; i < btns.length; i++ ) {
 
-            let mycont = new NavButton ( this, btx + i * ( btw + bts ), bty, [], i, btw, bth, btns[i], 40 ).setName ('nav' + i);
+            let mycont = new NavButton ( this, btx + i * ( btw + bts ), bty, i, btw, bth, btns[i], 40 ).setName ('nav' + i);
 
             mycont.on ('pointerdown', function () {
                 
@@ -415,7 +428,7 @@ class SceneA extends Phaser.Scene {
 
         const bx = 1025 + (895/2), by = 950;
 
-        let controlBtn = new MyButton ( this, bx, 1080 + bh/2, [], bw, bh, txt, 38 );
+        let controlBtn = new MyButton ( this, bx, 1080 + bh/2, bw, bh, txt, 38 );
      
         controlBtn.on ('pointerdown', function () {
 
@@ -465,7 +478,7 @@ class SceneA extends Phaser.Scene {
         const cardsx = (cardspW - cardW)/2 + cardspX + cardW/2, 
               cardsy = 150 + cardH/2;
 
-        const cardnew = new BingoCard ( this, 1920 + (cardW/2), cardsy, [], cardW, cardH, this.cardCounter );
+        const cardnew = new BingoCard ( this, 1920 + (cardW/2), cardsy, cardW, cardH, this.cardCounter );
 
         this.add.tween ({
             targets : cardnew,
@@ -590,11 +603,11 @@ class SceneA extends Phaser.Scene {
                 if ( points.length > 1 ) {
 
                     this.winCont.iterate ( function (child) {
-                        child.setFillStyle (0xffffff, 1);
+                        child.setFrame ( 0 );
                     });
     
                     for ( var i = 0; i < points[counter].length; i++) {
-                        this.winCont.getAt ( points[counter] [i] ).setFillStyle( 0xffff00, 1 );
+                        this.winCont.getAt ( points[counter] [i] ).setFrame ( 1 );
                     }
     
                     counter += 1;
@@ -605,10 +618,8 @@ class SceneA extends Phaser.Scene {
 
                     blinkOn = !blinkOn;
 
-                    let clr = blinkOn ? 0xffff00 : 0xffffff;
-
                     for ( var i = 0; i < points[0].length; i++) {
-                        this.winCont.getAt ( points[0] [i] ).setFillStyle( clr, 1 );
+                        this.winCont.getAt ( points[counter] [i] ).setFrame ( blinkOn ? 1 : 0 );
                     }
 
                 }
@@ -642,7 +653,7 @@ class SceneA extends Phaser.Scene {
 
             let rndX = Phaser.Math.Between ( ra, rb );
 
-            let circCont = new BingoBalls ( this, rndX, 570, [], i, cz, cz, 12 );
+            let circCont = new BingoBalls ( this, rndX, 570, i, cz, cz, 12 );
 
             this.circDraw.add ( circCont );
 
@@ -758,12 +769,10 @@ class SceneA extends Phaser.Scene {
             this.drawCount += 1;
                     
             let ball = this.circDraw.getByName ( 'crc' + randomBall );
-
-            ball.isCaptured = true;
             
-            ball.setPosition ( cx + cw/2, cy + ch/2 ).setAlpha (0.7);
+            ball.setPosition ( cx + cw/2, cy + ch/2 );
 
-            ball.first.setFillStyle (0xffff00, 1 );
+            ball.captured ();
 
             this.numbersDrawn.push ( randomBall + 1 );
 
@@ -794,22 +803,24 @@ class SceneA extends Phaser.Scene {
 
         this.drawCounter.text = 'Draw Count : ' +  this.drawCount;
 
-        this.indicatorsCont.getByName ('num' + id).first.setFillStyle (0xff7777, 1);
+        this.indicatorsCont.getByName ('num' + id).first.setFrame ( 2 );
 
-        const cs = 460/5;
+        const cs = 92;
 
-        const csx = 900 , csy = 550 + (cs/2);
+        const csx = 920 , csy = 550 + (cs/2);
 
         //..
         const bingoTxt = 'BINGO';
 
         let circCont = this.add.container ( csx, csy - (cs/2) );
 
-        let crc = this.add.circle ( 0, 0, cs/2, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a );
+        //let crc = this.add.circle ( 0, 0, cs/2, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a );
+
+        let crc = this.add.image (0, 0, 'solo' );
 
         let ltr = this.add.text ( 0, -25, bingoTxt.charAt ( Math.floor ( id/15 ) ), { color : 'black', fontFamily:'Oswald', fontSize : cs*0.3 } ).setOrigin (0.5);
 
-        let txt = this.add.text ( 0, 10, id+1, { color : 'black', fontFamily:'Oswald', fontSize : cs/2 } ).setOrigin (0.5);
+        let txt = this.add.text ( 0, 10, id+1, { color : 'black', fontFamily:'Oswald', fontSize : cs/2} ).setOrigin (0.5);
         
         circCont.add ([crc, ltr, txt]);
 
@@ -831,7 +842,7 @@ class SceneA extends Phaser.Scene {
 
                 if ( _this.ballsShownCounter >= 5 ) {
 
-                    _this.myballs.first.destroy();
+                    //_this.myballs.first.destroy();
 
                     _this.myballs.each ( function (child) {
 
@@ -844,7 +855,9 @@ class SceneA extends Phaser.Scene {
 
                     });
 
-                    
+                    setTimeout ( () => {
+                        _this.myballs.first.destroy();
+                    }, 500);
 
                 };
             }
@@ -963,7 +976,7 @@ class SceneA extends Phaser.Scene {
         });
 
         this.winCont.iterate ( ( child ) => {
-            child.setFillStyle (0xffffff, 1);
+            child.setFrame (0);
         });
 
         this.indicatorsCont.iterate ( ( child ) => {
@@ -1096,7 +1109,7 @@ class SceneA extends Phaser.Scene {
         //btn..
         const tmpX = withCancel ? btx : cx;
 
-        let btn = new MyButton ( this, tmpX, bty, [], bw, bh, btnTxt );
+        let btn = new MyButton ( this, tmpX, bty, bw, bh, btnTxt );
 
         btn.on ('pointerdown', function () {
 
@@ -1110,7 +1123,7 @@ class SceneA extends Phaser.Scene {
 
         if ( withCancel ) {
 
-            let cancel = new MyButton ( this, btx + (bw+bsp), bty, [], bw, bh, 'Cancel' );
+            let cancel = new MyButton ( this, btx + (bw+bsp), bty, bw, bh, 'Cancel' );
 
             cancel.on ('pointerdown', function () {
 
@@ -1159,9 +1172,7 @@ class SceneA extends Phaser.Scene {
 
                         let rot = Phaser.Math.Between ( 0, 360 );
 
-                        child.rot = rot;
-                        
-                        child.setRotation ( Math.PI/180 * rot );
+                        child.setTextRotation ( rot );
                         
                     }
 

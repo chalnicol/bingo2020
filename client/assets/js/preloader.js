@@ -42,12 +42,21 @@ class Preloader extends Phaser.Scene {
 
         this.load.image('drawmachine', 'client/assets/images/drawmachine.png');
 
-        this.load.image('ballscont', 'client/assets/images/ballscontainer.png');
+        this.load.image('top', 'client/assets/images/top.png');
 
+        this.load.image('bot', 'client/assets/images/bottom.png');
 
         this.load.image('gamecon', 'client/assets/images/gamecon.png');
 
         this.load.image('settingbtn', 'client/assets/images/setting.png');
+
+        this.load.image('solo', 'client/assets/images/solo.png');
+
+        this.load.spritesheet('pattern', 'client/assets/images/pattern.png', { frameWidth: 50, frameHeight: 50 });
+
+        this.load.spritesheet('balls', 'client/assets/images/balls.png', { frameWidth: 50, frameHeight: 50 });
+
+        this.load.spritesheet('indi', 'client/assets/images/indi.png', { frameWidth: 56, frameHeight: 56 });
         
 
         this.load.image('profilepic', 'client/assets/images/profilepic_sm.png');

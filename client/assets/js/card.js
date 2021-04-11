@@ -1,8 +1,8 @@
 class BingoCard extends Phaser.GameObjects.Container {
 
-    constructor(scene, x, y, children, w, h, i ) {
+    constructor(scene, x, y, w, h, i ) {
 
-        super(scene, x, y, children);
+        super(scene, x, y, [] );
         // ...
 
         this.arr = [];
