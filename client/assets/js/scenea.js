@@ -24,7 +24,6 @@ class SceneA extends Phaser.Scene {
 
         this.maxNumberOfCards = 3;
 
-
         //bg
         this.add.image ( 1920/2, 1080/2, 'bg' );
 
@@ -36,9 +35,7 @@ class SceneA extends Phaser.Scene {
 
         //let rct = this.add.rectangle ( 40, 30, 80, 80, 0xffffff, 1 ).setStrokeStyle ( 1, 0x0a0a0a ).setOrigin ( 0 );
 
-        let pic = this.add.image ( 80, 70, this.player.pic ); // 
-
-      
+        let pic = this.add.image ( 80, 70, this.player.pic ); //       
 
         let cashCont = this.add.container ( 230, 70 ); //200x80
 
@@ -170,20 +167,21 @@ class SceneA extends Phaser.Scene {
 
         //draw countdown...
         
-        let dcount = this.add.container ( 480 + dsw/2, 550 + dsh/2 ).setSize ( 356, 180 ).setInteractive();
+        let dcount = this.add.container ( 480 + dsw/2, 550 + dsh/2 );
 
         let rctj = this.add.rectangle ( 0, 0, 356, 180, 0x6e6e6e, 0.8 );
 
         let txta = this.add.text ( 0, -30, 'Draw Starts in', { color : 'white', fontSize: 28, fontFamily: 'Oswald'} ).setOrigin(0.5);
 
-        let txtb = this.add.text ( 0, 20, '00:00:00', { color : 'white', fontSize: 46, fontFamily: 'Oswald'} ).setOrigin(0.5);
+        let txtb = this.add.text ( 0, 20, '00:00:20', { color : 'white', fontSize: 46, fontFamily: 'Oswald'} ).setOrigin(0.5);
 
         dcount.add ([ rctj, txta, txtb ]);
 
-        dcount.on('pointerdown', () => {
-            console.log ('pindot');
-            this.startDraw();
-        });
+        // dcount.on('pointerdown', () => {
+        //     console.log ('pindot');
+        //     this.startDraw();
+        // });
+
 
         this.drawCountDown = dcount;
 
@@ -238,7 +236,21 @@ class SceneA extends Phaser.Scene {
 
         this.showInitialCardBuy ();
 
-        this.showPatternAndPrizes ( );
+        this.showPatternAndPrizes ();
+
+        let timer = this.time.addEvent ({
+            delay : 1000,
+            callback : () => {
+                
+                let timeRemain = 20 - Math.floor ( timer.getOverallProgress() * 20 );
+
+                this.drawCountDown.last.text = '00:00:' + ( timeRemain < 10 ? '0'+timeRemain : timeRemain );
+
+                if ( timer.getOverallProgress() ==  1 ) this.startDraw ();
+            },
+            callbackScope : this,
+            repeat : 19
+        });
 
     }
 
@@ -255,7 +267,7 @@ class SceneA extends Phaser.Scene {
 
         let mainImg = this.add.image ( 0, 0, 'splash');
 
-        let tipTxt = this.add.text ( 0, 95, 'Tip : Make sure to show the winning card before declaring "BINGO"! ', { fontSize : 20, fontFamily : 'Oswald', color : '#6e6e6e' }).setOrigin(0.5);
+        let tipTxt = this.add.text ( 0, 95, 'Note : Make sure to show the winning card before declaring "BINGO"! ', { fontSize : 20, fontFamily : 'Oswald', color : '#6e6e6e' }).setOrigin(0.5);
 
 
         miniCont.add ( [mainImg, tipTxt] );
@@ -755,16 +767,16 @@ class SceneA extends Phaser.Scene {
         if ( arr.length > 0 ) {
 
             //faker draw
-            // const tmp = this.cardContainer.getByName ('crd0').arr;
+            const tmp = this.cardContainer.getByName ('crd0').arr;
 
-            // const tmpPoint = gameData [ this.gameId ].points [ 0 ] [ this.drawCount ];
+            const tmpPoint = gameData [ this.gameId ].points [ 0 ] [ this.drawCount ];
 
-            // const r = Math.floor ( tmpPoint/5), c = tmpPoint % 5;
+            const r = Math.floor ( tmpPoint/5), c = tmpPoint % 5;
 
-            // const randomBall = tmp [r][c] - 1;
+            const randomBall = tmp [r][c] - 1;
 
             
-            const randomBall =  arr [ Math.floor ( Math.random() * arr.length ) ] ;
+            //const randomBall =  arr [ Math.floor ( Math.random() * arr.length ) ] ;
 
             this.drawCount += 1;
                     
@@ -980,7 +992,7 @@ class SceneA extends Phaser.Scene {
         });
 
         this.indicatorsCont.iterate ( ( child ) => {
-            child.first.setFillStyle (0xffffff, 1);
+            child.first.setFrame (1);
         });
 
 
