@@ -20,10 +20,13 @@ class SceneA extends Phaser.Scene {
             cash : 1000
         }
 
-        this.drawGap = 3000;
+        this.drawGap = 10000;
 
         this.maxNumberOfCards = 3;
 
+
+        //bg
+        this.add.image ( 1920/2, 1080/2, 'bg' );
 
         //profile..
 
@@ -207,7 +210,7 @@ class SceneA extends Phaser.Scene {
 
 
         //create background for card space.. 
-        this.add.rectangle ( 1025, 0, 895, 1080, 0xf3f3f3, 1 ).setOrigin(0); 
+        this.add.rectangle ( 1025, 0, 895, 1080, 0xf3f3f3, 0.4 ).setOrigin(0); 
        
         //create container for cards..
         this.cardContainer = this.add.container ( 0, 0 );
@@ -250,16 +253,12 @@ class SceneA extends Phaser.Scene {
 
         let miniCont = this.add.container ( 1920 + btw/2, bty ).setSize ( btw, bth ).setInteractive ();
 
-        let bRct = this.add.rectangle ( 0, 0, btw, bth, 0xffffff, 1).setStrokeStyle ( 3, 0x0a0a0a );
+        let mainImg = this.add.image ( 0, 0, 'splash');
 
-        let sRct = this.add.rectangle ( 0, 0, btw, 150, 0x3a3a3a, 0.9);
-        
-        let mainTxt = this.add.text ( 0, 0, 'Click Here To Purchase A Card', { fontSize : 34, fontFamily : 'Oswald', color : 'white' }).setOrigin(0.5);
-
-        let tipTxt = this.add.text ( 0, 95, 'Tip : Make sure to show the winning card before declaring "BINGO"! ', { fontSize : 20, fontFamily : 'Oswald', color : 'black' }).setOrigin(0.5);
+        let tipTxt = this.add.text ( 0, 95, 'Tip : Make sure to show the winning card before declaring "BINGO"! ', { fontSize : 20, fontFamily : 'Oswald', color : '#6e6e6e' }).setOrigin(0.5);
 
 
-        miniCont.add ( [bRct, sRct, mainTxt, tipTxt] );
+        miniCont.add ( [mainImg, tipTxt] );
 
         miniCont.on('pointerdown', () => {
 
@@ -425,7 +424,7 @@ class SceneA extends Phaser.Scene {
 
         //let txt = !gameStarted ? '+ Add Card' : 'Declare Bingo';
 
-        const bw = 600, bh = 70;
+        const bw = 600, bh = 80;
 
         const bx = 1025 + (895/2), by = 950;
 

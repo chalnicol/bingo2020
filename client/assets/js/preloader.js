@@ -36,9 +36,7 @@ class Preloader extends Phaser.Scene {
 
         });
 
-        
-        //scene1
-        //this.load.image('loadImg', 'client/assets/images/load_image.png');
+    
 
         this.load.image('drawmachine', 'client/assets/images/drawmachine.png');
 
@@ -55,14 +53,18 @@ class Preloader extends Phaser.Scene {
         this.load.image('cardnav', 'client/assets/images/cardnav.png');
 
         this.load.image('bingoBg', 'client/assets/images/bingoCardBg.png');
+
+        this.load.image('splash', 'client/assets/images/splash.png');
         
+        this.load.image('bg', 'client/assets/images/bg.jpg');
+
         this.load.spritesheet('pattern', 'client/assets/images/pattern.png', { frameWidth: 50, frameHeight: 50 });
 
         this.load.spritesheet('balls', 'client/assets/images/balls.png', { frameWidth: 50, frameHeight: 50 });
 
         this.load.spritesheet('indi', 'client/assets/images/indi.png', { frameWidth: 56, frameHeight: 56 });
 
-        this.load.spritesheet('control', 'client/assets/images/control.png', { frameWidth: 620, frameHeight: 80 });
+        this.load.spritesheet('control', 'client/assets/images/control.png', { frameWidth: 620, frameHeight: 90 });
 
         this.load.spritesheet('prev', 'client/assets/images/prev.png', { frameWidth: 110, frameHeight: 78 });
 
