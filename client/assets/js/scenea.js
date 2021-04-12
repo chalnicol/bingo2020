@@ -160,14 +160,11 @@ class SceneA extends Phaser.Scene {
 
         this.add.image ( 480 + dsw/2, 550 + dsh/2, 'drawmachine' );
 
-        //timer progress..
-        
-        this.timerprogress = this.add.rectangle ( 483, 800, 354, 100, 0x33ff33, 1 ).setOrigin(0).setVisible(false);
-
+     
 
         //draw countdown...
         
-        let dcount = this.add.container ( 480 + dsw/2, 550 + dsh/2 );
+        let dcount = this.add.container ( 480 + dsw/2, 550 + dsh/2 ).setVisible (false);
 
         let rctj = this.add.rectangle ( 0, 0, 356, 180, 0x6e6e6e, 0.8 );
 
@@ -177,21 +174,20 @@ class SceneA extends Phaser.Scene {
 
         dcount.add ([ rctj, txta, txtb ]);
 
-        // dcount.on('pointerdown', () => {
-        //     console.log ('pindot');
-        //     this.startDraw();
-        // });
-
-
         this.drawCountDown = dcount;
 
 
         //add image for the balls drawn container
-        const csp = 5, cs = (460 - (csp * 4))/5 ;
+        //const csp = 5, cs = (460 - (csp * 4))/5 ;
 
-        const csx = 920 , csy = 550 + (cs/2);
+        const csx = 920;
 
         this.add.image ( csx, 550 + dsh/2, 'bot' );
+
+        
+        //timer progress..
+    
+        this.timerprogress = this.add.rectangle ( 920 - (96/2), 550, 96, 462, 0xffffff, 0.2 ).setOrigin(0).setVisible(false);
 
         //create container for balls drawn..
         this.myballs = this.add.container (0, 0);
@@ -201,20 +197,21 @@ class SceneA extends Phaser.Scene {
 
         var mask = shape.createBitmapMask();
 
+        this.timerprogress.setMask (mask);
+
         this.myballs.setMask(mask);
 
         //add another layer
         this.add.image ( csx, 550 + dsh/2, 'top' );
 
 
+        
         //create background for card space.. 
         this.add.rectangle ( 1025, 0, 895, 1080, 0xf3f3f3, 0.4 ).setOrigin(0); 
        
         //create container for cards..
         this.cardContainer = this.add.container ( 0, 0 );
 
-
-        
         //initialize game..
         this.initGame();       
 
@@ -222,11 +219,13 @@ class SceneA extends Phaser.Scene {
 
     initGame () {
 
+        this.cardsArr = [];
+
+        this.numbersDrawn = [];
+
         this.drawCount = 0;
 
         this.ballsShownCounter = 0;
-
-        this.cardsArr = [];
 
         this.cardCounter = 0;
 
@@ -238,20 +237,48 @@ class SceneA extends Phaser.Scene {
 
         this.showPatternAndPrizes ();
 
+    }
+
+    startInitCountDown () 
+    {
+
+        const waitingTIme = 10;
+
+        this.drawCountDown.setScale (0.3).setVisible ( true );
+
+        this.drawCountDown.last.setText ( '00:00:'+ waitingTIme );
+
+        this.add.tween ({
+            targets : this.drawCountDown,
+            scaleX : 1,
+            scaleY : 1,
+            duration : 300,
+            easeParams : [ 1.2, 1 ],
+            ease : 'Bounce'
+        });
+
         let timer = this.time.addEvent ({
             delay : 1000,
             callback : () => {
                 
-                let timeRemain = 20 - Math.floor ( timer.getOverallProgress() * 20 );
+                let timeRemain = waitingTIme - Math.floor ( timer.getOverallProgress() * waitingTIme );
 
                 this.drawCountDown.last.text = '00:00:' + ( timeRemain < 10 ? '0'+timeRemain : timeRemain );
 
-                if ( timer.getOverallProgress() ==  1 ) this.startDraw ();
+                if ( timer.getOverallProgress() ==  1 ) {
+                 
+                    timer.remove ();
+
+                    this.drawCountDown.visible = false;
+
+                    this.startDraw ();
+
+                }
             },
             callbackScope : this,
-            repeat : 19
+            repeat : waitingTIme - 1
         });
-
+        
     }
 
     showInitialCardBuy () 
@@ -277,6 +304,9 @@ class SceneA extends Phaser.Scene {
             this.initCardBuyCont.destroy ();
 
             this.buyCard ();
+
+            this.startInitCountDown ();
+
 
         });
 
@@ -636,7 +666,6 @@ class SceneA extends Phaser.Scene {
 
                 }
                 
-
             },
             //args: [],
             callbackScope: this,
@@ -684,12 +713,6 @@ class SceneA extends Phaser.Scene {
 
     startDraw () 
     {
-
-        //this.drawStarted = true;
-
-        this.numbersDrawn = [];
-
-        this.drawCountDown.visible = false;
 
         this.createBalls ();
 
@@ -769,14 +792,22 @@ class SceneA extends Phaser.Scene {
             //faker draw
             const tmp = this.cardContainer.getByName ('crd0').arr;
 
-            const tmpPoint = gameData [ this.gameId ].points [ 0 ] [ this.drawCount ];
+            // let randomBall;
 
-            const r = Math.floor ( tmpPoint/5), c = tmpPoint % 5;
+            // if ( this.drawCount < gameData [ this.gameId ].points [ 0 ].length  ) 
+            // {
+            //     const tmpPoint = gameData [ this.gameId ].points [ 0 ] [ this.drawCount ];
 
-            const randomBall = tmp [r][c] - 1;
+            //     const r = Math.floor ( tmpPoint/5), c = tmpPoint % 5;
+    
+            //     randomBall = tmp [r][c] - 1;
 
-            
-            //const randomBall =  arr [ Math.floor ( Math.random() * arr.length ) ] ;
+            // }else {
+
+            //     randomBall =  arr [ Math.floor ( Math.random() * arr.length ) ] ;
+            // }
+           
+            const randomBall =  arr [ Math.floor ( Math.random() * arr.length ) ] ;
 
             this.drawCount += 1;
                     
@@ -947,7 +978,7 @@ class SceneA extends Phaser.Scene {
 
                 this.illuminateCells ( cc );
                 
-                this.showCompletePrompt ('Confirmed, Congratulations!', 34, 'OK', () => {
+                this.showCompletePrompt ('Confirmed, Congratulations!', 34, 'Continue', () => {
 
                     this.removePrompt ();
 
@@ -995,11 +1026,10 @@ class SceneA extends Phaser.Scene {
             child.first.setFrame (1);
         });
 
+        this.drawCounter.text = 'Draw Count : 0';
 
         //reset 
         this.time.delayedCall ( 1000, () => {
-
-            this.drawCountDown.setVisible (true);
 
             this.initGame ();
 
@@ -1198,11 +1228,11 @@ class SceneA extends Phaser.Scene {
 
             let timerProgress = this.drawTimer.getProgress ();
 
-            let progressW = 355 * timerProgress;
+            let progressH = 462 * timerProgress;
 
-            this.timerprogress.width = ( progressW < 10 ) ? 10 : progressW;
+            this.timerprogress.height = ( progressH < 10 ) ? 10 : progressH;
 
-
+            this.timerprogress.y = 550 + (462 - progressH);
         }
         
     }
