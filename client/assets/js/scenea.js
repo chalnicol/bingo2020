@@ -12,7 +12,7 @@ class SceneA extends Phaser.Scene {
 
     create () 
     {
-
+        
         // initialize player..
         this.player = {
             pic : 'profilepic',
@@ -26,6 +26,11 @@ class SceneA extends Phaser.Scene {
 
         //bg
         this.add.image ( 1920/2, 1080/2, 'bg' );
+
+        this.timetxt = this.add.text ( 1035, 1010, 'Thistime', { fontFamily: 'Arial', fontSize : 20, color: '#000' });
+
+        this.deltatxt = this.add.text ( 1035, 1050, 'Thisdelta', { fontFamily: 'Arial', fontSize : 20, color: '#000' });
+        
 
         //profile..
 
@@ -1194,7 +1199,10 @@ class SceneA extends Phaser.Scene {
     update ( time, delta ) {
 
         //480,550 360x460
+        this.timetxt.text = time;
 
+        this.deltatxt.text = delta;
+        
         if ( this.startDrawAnim ) {
 
             this.circDraw.iterate ( function ( child ) {
