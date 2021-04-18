@@ -1226,8 +1226,11 @@ class SceneA extends Phaser.Scene {
                         
                     }
 
-                    child.x += Math.cos( child.rot/180*Math.PI )*child.vel;
-                    child.y += Math.sin( child.rot/180*Math.PI )*child.vel;
+                    //
+                    let trueVel = 720/(1000/delta)
+                    
+                    child.x += Math.cos( child.rot/180*Math.PI )*trueVel;
+                    child.y += Math.sin( child.rot/180*Math.PI )*trueVel;
 
 
                 }
