@@ -1212,6 +1212,11 @@ class SceneA extends Phaser.Scene {
                     const startx = 480 + (child.w*1.5), starty = 550 + (child.h*1.5);
 
                     const endx = 840 - (child.w*1.5), endy = 1010 - (child.h*1.5);
+                    
+                    let trueVel = 720/(1000/delta)
+
+                    child.x += Math.cos( child.rot/180*Math.PI )*trueVel;
+                    child.y += Math.sin( child.rot/180*Math.PI )*trueVel;
 
                     if ( child.x <= startx || child.y <=starty || child.x >= endx || child.y >= endy ) {
 
@@ -1225,13 +1230,6 @@ class SceneA extends Phaser.Scene {
                         child.setTextRotation ( rot );
                         
                     }
-
-                    //
-                    let trueVel = 720/(1000/delta)
-                    
-                    child.x += Math.cos( child.rot/180*Math.PI )*trueVel;
-                    child.y += Math.sin( child.rot/180*Math.PI )*trueVel;
-
 
                 }
                 
